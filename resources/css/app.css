@@ -1,0 +1,6 @@
+#map {
+    height: 500px;
+}
+#map .leaflet-popup-content {
+    font-size: 14px;
+}

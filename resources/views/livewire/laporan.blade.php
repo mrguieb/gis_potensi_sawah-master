@@ -1,0 +1,55 @@
+<div>
+    <div class="card">
+        <div class="card-header"><h5>Laporan Potensi</h5></div>
+        <div class="card-body">
+            <div class="row">
+                {{-- Tahun --}}
+                <div class="col-md-4">
+                    <label>Tahun</label>
+                    <select class="form-control" wire:model="tahun">
+                        <option value="">Pilih Tahun</option>
+                        @for ($i = 2018; $i <= 2025; $i++)
+                            <option value="{{ $i }}">{{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+
+                {{-- Kecamatan --}}
+                <div class="col-md-4">
+                    <label>Kecamatan</label>
+                    <select class="form-control" wire:model="kecamatan">
+                        <option value="">Pilih Kecamatan</option>
+                        @foreach ($kecamatans as $item)
+                            <option value="{{ $item->id }}">{{ $item->nama_kecamatan }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Desa --}}
+                <div class="col-md-4">
+                    <label>Desa</label>
+                    <select class="form-control" wire:model="desa">
+                        <option value="">Pilih Desa</option>
+                        @foreach ($desas as $item)
+                            <option value="{{ $item->id }}">{{ $item->nama_desa }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary mt-3" wire:click="cetakPdf">Preview PDF</button>
+
+            @if($pdfUrl)
+                <div class="mt-4">
+                    <h5>PDF Preview:</h5>
+                    <iframe id="pdfIframe" src="{{ $pdfUrl }}" width="100%" height="600px"></iframe>
+                    <div class="mt-2">
+                        <a href="{{ $pdfUrl }}" target="_blank" class="btn btn-success">Open in New Tab</a>
+                        <a href="{{ $pdfUrl }}" download class="btn btn-primary">Download PDF</a>
+                        <button onclick="document.getElementById('pdfIframe').contentWindow.print()" class="btn btn-warning">Print</button>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
