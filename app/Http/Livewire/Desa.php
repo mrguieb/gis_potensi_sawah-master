@@ -18,6 +18,14 @@ class Desa extends Component
 
     protected $desas, $kecamatans;
 
+    // ✅ Custom validation messages
+    protected $messages = [
+        'nama_desa.required'   => 'Barangay name is required.',
+        'kecamatan_id.required' => 'Please select a district.',
+        'luas_wilayah.required' => 'Number of farmers is required.',
+        'luas_wilayah.numeric'  => 'Number of farmers must be a number.',
+    ];
+
     public function render()
     {
         $this->desas = ModelsDesa::join('kecamatans', 'desas.kecamatans_id', '=', 'kecamatans.id')
@@ -25,7 +33,9 @@ class Desa extends Component
             ->where('nama_desa', 'like', '%' . $this->search . '%')
             ->orWhere('nama_kecamatan', 'like', '%' . $this->search . '%')
             ->paginate($this->perPage);
+
         $this->kecamatans = Kecamatan::all();
+
         return view('livewire.desa', [
             'desas' => $this->desas,
             'kecamatans' => $this->kecamatans,
@@ -51,9 +61,9 @@ class Desa extends Component
 
     public function store(){
         $this->validate([
-            'nama_desa' => 'required',
-            'kecamatan_id' => 'required',
-            'luas_wilayah' => 'required',
+            'nama_desa' => 'required|string|max:255',
+            'kecamatan_id' => 'required|exists:kecamatans,id',
+            'luas_wilayah' => 'required|numeric|min:1',
         ]);
 
         ModelsDesa::create([
@@ -62,15 +72,15 @@ class Desa extends Component
             'luas_wilayah' => $this->luas_wilayah,
         ]);
 
-        session()->flash('message', 'Data Desa Berhasil Ditambahkan');
+        session()->flash('message', 'Barangay added successfully!');
         $this->resetFields();
     }
 
     public function update(){
         $this->validate([
-            'nama_desa' => 'required',
-            'kecamatan_id' => 'required',
-            'luas_wilayah' => 'required',
+            'nama_desa' => 'required|string|max:255',
+            'kecamatan_id' => 'required|exists:kecamatans,id',
+            'luas_wilayah' => 'required|numeric|min:1',
         ]);
 
         if ($this->desa_id) {
@@ -80,7 +90,7 @@ class Desa extends Component
                 'kecamatans_id' => $this->kecamatan_id,
                 'luas_wilayah' => $this->luas_wilayah,
             ]);
-            session()->flash('message', 'Barangay Data Successfully Updated');
+            session()->flash('message', 'Barangay updated successfully!');
             $this->resetFields();
         }
     }
@@ -89,7 +99,7 @@ class Desa extends Component
         if ($this->desa_id) {
             $desa = ModelsDesa::find($this->desa_id);
             $desa->delete();
-            session()->flash('message', 'Barangay Data Successfully Deleted');
+            session()->flash('message', 'Barangay deleted successfully!');
             $this->resetFields();
         }
     }

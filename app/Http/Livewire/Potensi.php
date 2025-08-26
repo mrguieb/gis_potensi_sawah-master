@@ -26,6 +26,30 @@ class Potensi extends Component
 
     protected $updatesQueryString = ['search', 'perPage'];
 
+    /**
+     * ✅ Custom validation rules
+     */
+    protected $rules = [
+        'desa_id'         => 'required',
+        'pemiliklahan_id' => 'required',
+        'infotanah_id'    => 'required',
+        'luas_lahan'      => 'required|numeric|min:1',
+        'batas_lahan'     => 'required',
+    ];
+
+    /**
+     * ✅ Custom validation messages
+     */
+    protected $messages = [
+        'desa_id.required'         => 'Please select a Barangay.',
+        'pemiliklahan_id.required' => 'Please select a Farmer/Land Owner.',
+        'infotanah_id.required'    => 'Please select a Soil Type.',
+        'luas_lahan.required'      => 'Land area is required.',
+        'luas_lahan.numeric'       => 'Land area must be a number.',
+        'luas_lahan.min'           => 'Land area must be greater than 0.',
+        'batas_lahan.required'     => 'You must draw or upload the land boundaries.',
+    ];
+
     public function render()
     {
         $potensi = ModelsPotensi::join('desas', 'desas.id', '=', 'potensis.desa_id')
@@ -116,13 +140,7 @@ class Potensi extends Component
     // Store new record
     public function store()
     {
-        $validatedData = $this->validate([
-            'desa_id' => 'required',
-            'pemiliklahan_id' => 'required',
-            'infotanah_id' => 'required',
-            'luas_lahan' => 'required',
-            'batas_lahan' => 'required',
-        ]);
+        $validatedData = $this->validate();
 
         ModelsPotensi::create($validatedData);
 
@@ -133,13 +151,7 @@ class Potensi extends Component
     // Update existing record
     public function update()
     {
-        $validatedData = $this->validate([
-            'desa_id' => 'required',
-            'pemiliklahan_id' => 'required',
-            'infotanah_id' => 'required',
-            'luas_lahan' => 'required',
-            'batas_lahan' => 'required',
-        ]);
+        $validatedData = $this->validate();
 
         if ($this->potensi_id) {
             $potensi = ModelsPotensi::find($this->potensi_id);

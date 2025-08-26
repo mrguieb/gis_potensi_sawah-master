@@ -148,7 +148,8 @@
                         <i class="fa fa-2x fa-envelope text-white m-0 mr-3"></i>
                         <div class="d-flex flex-column">
                             <h5 class="text-white font-weight-medium">Email</h5>
-                            <p class="m-0 text-white">agribangarlgu@ gmail.com</p>
+                            <p class="m-0 text-white">agricultureservice@lgubangar.gov.ph</p>
+                            <p class="m-0 text-white">oasbangar@gmail.com</p>
                         </div>
                     </div>
                 </div>
@@ -157,7 +158,7 @@
                         <i class="fa fa-2x fa-phone-alt text-white m-0 mr-3"></i>
                         <div class="d-flex flex-column">
                             <h5 class="text-white font-weight-medium">Contact Number</h5>
-                            <p class="m-0 text-white">0821-2425-1672</p>
+                            <p class="m-0 text-white">0995-750-1093</p>
                         </div>
                     </div>
                 </div>
@@ -213,34 +214,50 @@
             </div>
             <div class="owl-carousel testimonial-carousel mt-2">
                 <div class="testimonial-item">
-                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/testimonial-1.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
+                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/regina.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
                     <div class="bg-light text-center p-4 pt-0">
-                        <h5 class="font-weight-medium mt-5">Kepala Pertanian</h5>
-                        <p class="text-muted font-italic">Kepala Dinas</p>
+                        <h5 class="font-weight-medium mt-5">Regina M.Labiano</h5>
+                        <p class="text-muted font-italic">Municipal Agriculturist</p>
                         <p class="m-0">Sed ea amet kasd elitr stet, stet rebum et ipsum est duo elitr eirmod clita lorem. Dolor ipsum clita</p>
                     </div>
                 </div>
                 <div class="testimonial-item">
-                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/testimonial-2.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
+                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/violeta.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
                     <div class="bg-light text-center p-4 pt-0">
-                        <h5 class="font-weight-medium mt-5">Kepala Pertanian</h5>
-                        <p class="text-muted font-italic">Kepala Dinas</p>
+                        <h5 class="font-weight-medium mt-5">Violeta M. Acido</h5>
+                        <p class="text-muted font-italic">Agricultural Tech</p>
                         <p class="m-0">Sed ea amet kasd elitr stet, stet rebum et ipsum est duo elitr eirmod clita lorem. Dolor ipsum clita</p>
                     </div>
                 </div>
                 <div class="testimonial-item">
-                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/testimonial-3.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
+                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/comelia.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
                     <div class="bg-light text-center p-4 pt-0">
-                        <h5 class="font-weight-medium mt-5">Kepala Pertanian</h5>
-                        <p class="text-muted font-italic">Kepala Dinas</p>
+                        <h5 class="font-weight-medium mt-5">Comelia M. Olpinaldo</h5>
+                        <p class="text-muted font-italic">Agricultural Tech</p>
                         <p class="m-0">Sed ea amet kasd elitr stet, stet rebum et ipsum est duo elitr eirmod clita lorem. Dolor ipsum clita</p>
                     </div>
                 </div>
                 <div class="testimonial-item">
-                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/testimonial-4.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
+                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/rowena.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
                     <div class="bg-light text-center p-4 pt-0">
-                        <h5 class="font-weight-medium mt-5">Kepala Pertanian</h5>
-                        <p class="text-muted font-italic">Kepala Dinas</p>
+                        <h5 class="font-weight-medium mt-5">Rowena D. Dieza</h5>
+                        <p class="text-muted font-italic">Agricultural Tech</p>
+                        <p class="m-0">Sed ea amet kasd elitr stet, stet rebum et ipsum est duo elitr eirmod clita lorem. Dolor ipsum clita</p>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/katrina.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
+                    <div class="bg-light text-center p-4 pt-0">
+                        <h5 class="font-weight-medium mt-5">Katrina P. Cabalona</h5>
+                        <p class="text-muted font-italic">Agricultural Tech</p>
+                        <p class="m-0">Sed ea amet kasd elitr stet, stet rebum et ipsum est duo elitr eirmod clita lorem. Dolor ipsum clita</p>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <img class="position-relative rounded-circle bg-white shadow mx-auto" src="{{ url('/') }}/img/roland.jpg" style="width: 100px; height: 100px; padding: 12px; margin-bottom: -50px; z-index: 1;" alt="">
+                    <div class="bg-light text-center p-4 pt-0">
+                        <h5 class="font-weight-medium mt-5">Roland L. Lardizabal</h5>
+                        <p class="text-muted font-italic">Agricultural Tech</p>
                         <p class="m-0">Sed ea amet kasd elitr stet, stet rebum et ipsum est duo elitr eirmod clita lorem. Dolor ipsum clita</p>
                     </div>
                 </div>

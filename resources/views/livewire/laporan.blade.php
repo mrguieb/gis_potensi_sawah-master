@@ -1,14 +1,14 @@
 <div>
     <div class="card">
-        <div class="card-header"><h5>Laporan Potensi</h5></div>
+        <div class="card-header"><h5>Report</h5></div>
         <div class="card-body">
             <div class="row">
                 {{-- Tahun --}}
                 <div class="col-md-4">
-                    <label>Tahun</label>
+                    <label>Year</label>
                     <select class="form-control" wire:model="tahun">
-                        <option value="">Pilih Tahun</option>
-                        @for ($i = 2018; $i <= 2025; $i++)
+                        <option value="">Select Year</option>
+                        @for ($i = 2025; $i <= 2025; $i++)
                             <option value="{{ $i }}">{{ $i }}</option>
                         @endfor
                     </select>
@@ -16,9 +16,9 @@
 
                 {{-- Kecamatan --}}
                 <div class="col-md-4">
-                    <label>Kecamatan</label>
+                    <label>District</label>
                     <select class="form-control" wire:model="kecamatan">
-                        <option value="">Pilih Kecamatan</option>
+                        <option value="">Select District</option>
                         @foreach ($kecamatans as $item)
                             <option value="{{ $item->id }}">{{ $item->nama_kecamatan }}</option>
                         @endforeach
@@ -27,9 +27,9 @@
 
                 {{-- Desa --}}
                 <div class="col-md-4">
-                    <label>Desa</label>
+                    <label>Barangay</label>
                     <select class="form-control" wire:model="desa">
-                        <option value="">Pilih Desa</option>
+                        <option value="">Select Barangay</option>
                         @foreach ($desas as $item)
                             <option value="{{ $item->id }}">{{ $item->nama_desa }}</option>
                         @endforeach

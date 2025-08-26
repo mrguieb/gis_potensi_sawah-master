@@ -17,6 +17,34 @@ class Pemiliklahan extends Component
     public $nama_pemiliklahan, $alamat_pemiliklahan, $no_hp_pemiliklahan, $email_pemiliklahan, $pemiliklahan_id;
     protected $pemiliklahans;
 
+    /**
+     * ✅ Validation rules
+     */
+    protected $rules = [
+        'nama_pemiliklahan'   => 'required|string|max:255',
+        'alamat_pemiliklahan' => 'required|string|max:255',
+        'no_hp_pemiliklahan'  => 'required|digits_between:10,15',
+        'email_pemiliklahan'  => 'nullable|email',
+    ];
+
+    /**
+     * ✅ Custom validation messages (English)
+     */
+    protected $messages = [
+        'nama_pemiliklahan.required'   => 'Owner name is required.',
+        'nama_pemiliklahan.string'     => 'Owner name must be text.',
+        'nama_pemiliklahan.max'        => 'Owner name cannot exceed 255 characters.',
+
+        'alamat_pemiliklahan.required' => 'Address is required.',
+        'alamat_pemiliklahan.string'   => 'Address must be text.',
+        'alamat_pemiliklahan.max'      => 'Address cannot exceed 255 characters.',
+
+        'no_hp_pemiliklahan.required'  => 'Phone number is required.',
+        'no_hp_pemiliklahan.digits_between' => 'Phone number must be between 10 and 15 digits.',
+
+        'email_pemiliklahan.email'     => 'Please enter a valid email address.',
+    ];
+
     public function render()
     {
         $this->pemiliklahans = ModelsPemiliklahan::where('nama_pemiliklahan', 'like', '%' . $this->search . '%')
@@ -32,62 +60,46 @@ class Pemiliklahan extends Component
 
     public function resetInputFields()
     {
-        $this->nama_pemiliklahan = '';
+        $this->nama_pemiliklahan   = '';
         $this->alamat_pemiliklahan = '';
-        $this->no_hp_pemiliklahan = '';
-        $this->email_pemiliklahan = '';
-        $this->pemiliklahan_id = '';
+        $this->no_hp_pemiliklahan  = '';
+        $this->email_pemiliklahan  = '';
+        $this->pemiliklahan_id     = '';
     }
 
-    public function pemiliklahanId($id){
+    public function pemiliklahanId($id)
+    {
         $this->pemiliklahan_id = $id;
 
         $pemiliklahan = ModelsPemiliklahan::find($id);
-        $this->nama_pemiliklahan = $pemiliklahan->nama_pemiliklahan;
+        $this->nama_pemiliklahan   = $pemiliklahan->nama_pemiliklahan;
         $this->alamat_pemiliklahan = $pemiliklahan->alamat_pemiliklahan;
-        $this->no_hp_pemiliklahan = $pemiliklahan->no_hp_pemiliklahan;
-        $this->email_pemiliklahan = $pemiliklahan->email_pemiliklahan;
-
+        $this->no_hp_pemiliklahan  = $pemiliklahan->no_hp_pemiliklahan;
+        $this->email_pemiliklahan  = $pemiliklahan->email_pemiliklahan;
     }
 
     public function store()
     {
-        $validatedDate = $this->validate([
-            'nama_pemiliklahan' => 'required',
-            'alamat_pemiliklahan' => 'required',
-            'no_hp_pemiliklahan' => 'required',
-            'email_pemiliklahan' => 'required',
-        ]);
+        $validatedData = $this->validate();
 
-        ModelsPemiliklahan::create($validatedDate);
+        ModelsPemiliklahan::create($validatedData);
 
-        session()->flash('message', 'Data Pemilik Lahan Berhasil Ditambahkan.');
-
+        session()->flash('message', 'Land owner successfully added.');
         $this->resetInputFields();
-
-        $this->emit('pemiliklahanStore'); // Close model to using to jquery
+        $this->emit('pemiliklahanStore'); // Close modal with jQuery
     }
 
     public function update()
     {
-        $validatedDate = $this->validate([
-            'nama_pemiliklahan' => 'required',
-            'alamat_pemiliklahan' => 'required',
-            'no_hp_pemiliklahan' => 'required',
-            'email_pemiliklahan' => 'required',
-        ]);
+        $validatedData = $this->validate();
 
         if ($this->pemiliklahan_id) {
             $pemiliklahan = ModelsPemiliklahan::find($this->pemiliklahan_id);
-            $pemiliklahan->update([
-                'nama_pemiliklahan' => $this->nama_pemiliklahan,
-                'alamat_pemiliklahan' => $this->alamat_pemiliklahan,
-                'no_hp_pemiliklahan' => $this->no_hp_pemiliklahan,
-                'email_pemiliklahan' => $this->email_pemiliklahan,
-            ]);
+            $pemiliklahan->update($validatedData);
+
             $this->resetInputFields();
-            $this->emit('pemiliklahanUpdate'); // Close model to using to jquery
-            session()->flash('message', 'Farmer/Land owner data has been successfully updated.');
+            $this->emit('pemiliklahanUpdate'); // Close modal with jQuery
+            session()->flash('message', 'Land owner successfully updated.');
         }
     }
 
@@ -95,7 +107,7 @@ class Pemiliklahan extends Component
     {
         if ($this->pemiliklahan_id) {
             ModelsPemiliklahan::where('id', $this->pemiliklahan_id)->delete();
-            session()->flash('message', 'Farmer/Land owner data has been successfully Deleted.');
+            session()->flash('message', 'Land owner successfully deleted.');
         }
     }
 }

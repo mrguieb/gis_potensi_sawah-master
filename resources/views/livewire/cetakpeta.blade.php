@@ -5,24 +5,54 @@
     <title>Laporan Potensi Sawah</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: "Times New Roman", serif;
+            margin: 40px;
+            font-size: 12px;
+            color: #000;
         }
-        .header, .footer {
-            width: 100%;
+        .frame {
+            border: 2px solid #000;
+            padding: 40px;
+        }
+        /* Header */
+        .header {
             text-align: center;
+            margin-bottom: 20px;
+            position: relative;
         }
         .header img {
             height: 80px;
-            float: left;
+            position: absolute;
+            top: 0;
         }
-        .header h2, .header h3 {
-            margin: 0;
+        .header .logo-left {
+            left: 0;
         }
-        .frame {
-            border: 3px solid #000;
-            padding: 10px;
+        .header .logo-right {
+            right: 0;
         }
+        .header h2, .header h3, .header h4 {
+            margin: 2px 0;
+        }
+        .header h2 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .header h3 {
+            font-size: 14px;
+            font-weight: normal;
+        }
+        .header h4 {
+            font-size: 14px;
+            text-decoration: underline;
+        }
+        .report-meta {
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -31,49 +61,67 @@
         table, th, td {
             border: 1px solid black;
         }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
         th, td {
             padding: 6px;
             text-align: center;
             font-size: 12px;
         }
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        /* Signatures */
         .signatures {
-            margin-top: 50px;
+            margin-top: 60px;
             width: 100%;
             display: flex;
             justify-content: space-between;
         }
         .signature-box {
             text-align: center;
-            width: 30%;
+            width: 45%;
         }
+        .signature-box p {
+            margin: 4px 0;
+        }
+        .signature-line {
+            margin-top: 60px;
+            border-top: 1px solid #000;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
         .generated {
-            margin-top: 50px;
+            margin-top: 40px;
             text-align: right;
-            font-size: 10px;
+            font-size: 11px;
+            font-style: italic;
         }
-        .logo-right {
-            float: right;
-            height: 80px;
-        }
-        .clear { clear: both; }
     </style>
 </head>
 <body>
     <div class="frame">
-        <!-- Header with logos -->
+        <!-- Header -->
         <div class="header">
-            <img src="https://yourdomain.com/logo-left.png" alt="Logo Left">
-            <img src="https://yourdomain.com/logo-right.png" alt="Logo Right" class="logo-right">
-            <div class="clear"></div>
-            <h2>DINAS PERTANIAN</h2>
-            <h3>KABUPATEN KOLAKA TIMUR</h3>
-            <h4>Laporan Potensi Sawah</h4>
+            <img src="https://lgubangar.gov.ph/wp-content/uploads/2021/10/cropped-tablogo.png" alt="Logo Left" class="logo-left">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Bagong_Pilipinas_logo.png" alt="Logo Right" class="logo-right">
+            
+            <h2>AGRI BANGAR</h2>
+            <h3>OFFICE FOR AGRICULTURAL SERVICES</h3>
+            <h4>Land Information Report</h4>
+
             @if($petas->isNotEmpty())
-                <p>
-                    Tahun: {{ request()->get('tahun') ?? 'Semua' }} |
-                    Kecamatan: {{ $petas->first()->nama_kecamatan ?? '-' }} |
-                    Desa: {{ $petas->first()->nama_desa ?? '-' }}
-                </p>
+                <div class="report-meta">
+                    Year: {{ $tahun ?? 'Semua' }} |
+                     {{ $kecamatan ?? ($petas->first()->nama_kecamatan ?? '-') }} |
+                    Barangay: {{ $desa ?? ($petas->first()->nama_desa ?? '-') }}
+                </div>
             @endif
         </div>
 
@@ -82,12 +130,12 @@
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Nama Desa</th>
-                    <th>Nama Pemilik</th>
-                    <th>Jenis Tanah</th>
-                    <th>Ketinggian</th>
-                    <th>Kelembaban</th>
-                    <th>Luas Sawah</th>
+                    <th>Barangay Name</th>
+                    <th>Farmer / Land Owner</th>
+                    <th>Soil Type</th>
+                    <th>Elevation (mpdl)</th>
+                    <th>Humidity (%)</th>
+                    <th>Land Area (Ha)</th>
                 </tr>
             </thead>
             <tbody>
@@ -97,13 +145,13 @@
                         <td>{{ $item->nama_desa }}</td>
                         <td>{{ $item->nama_pemiliklahan }}</td>
                         <td>{{ $item->jenis_tanah }}</td>
-                        <td>{{ $item->ketinggian }} mpdl</td>
-                        <td>{{ $item->kelembaban }}%</td>
-                        <td>{{ $item->luas_lahan }} Ha</td>
+                        <td>{{ $item->ketinggian }}</td>
+                        <td>{{ $item->kelembaban }}</td>
+                        <td>{{ $item->luas_lahan }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7">Data Tidak Ditemukan</td>
+                        <td colspan="7">No Data Available</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -112,22 +160,21 @@
         <!-- Signatures -->
         <div class="signatures">
             <div class="signature-box">
-                <p>Mengetahui,</p>
-                <p><strong>Bupati</strong></p>
-                <br><br>
-                <p>__________________</p>
+                <p><strong>Regina M. Labiano</strong></p>
+                <p>Municipal Agriculturist</p>
+                <div class="signature-line"></div>
             </div>
             <div class="signature-box">
-                <p>Kepala Dinas</p>
-                <p><strong>Dinas Pertanian</strong></p>
-                <br><br>
-                <p>__________________</p>
+                <p><strong>__________________</strong></p>
+                <p>Head of Department</p>
+                <p>Dinas Pertanian</p>
+                <div class="signature-line"></div>
             </div>
         </div>
 
-        <!-- Generated on -->
+        <!-- Footer -->
         <div class="generated">
-            <p>Generated on: {{ \Carbon\Carbon::now()->format('d M Y, H:i') }}</p>
+            <p>Generated on: {{ \Carbon\Carbon::now()->format('d F Y, H:i') }}</p>
         </div>
     </div>
 </body>

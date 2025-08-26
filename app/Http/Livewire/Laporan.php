@@ -52,7 +52,12 @@ class Laporan extends Component
             ->when($this->desa, fn($q) => $q->where('desa_id', $this->desa))
             ->get();
 
-        $pdf = Pdf::loadView('livewire.cetakpeta', ['petas' => $petas]);
+        $pdf = Pdf::loadView('livewire.cetakpeta', [
+            'petas' => $petas,
+            'tahun' => $this->tahun,
+            'kecamatan' => $this->kecamatan ? ModelsKecamatan::find($this->kecamatan)->nama_kecamatan : null,
+            'desa' => $this->desa ? ModelsDesa::find($this->desa)->nama_desa : null,
+        ]);
 
         $filename = 'laporan_' . now()->format('Ymd_His') . '.pdf';
         $path = storage_path('app/public/' . $filename);
