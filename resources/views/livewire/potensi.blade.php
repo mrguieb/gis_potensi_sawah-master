@@ -23,6 +23,11 @@
                                     <option value="20">20</option>
                                     <option value="25">25</option>
                                     <option value="30">30</option>
+                                    <option value="30">35</option>
+                                    <option value="30">40</option>
+                                    <option value="30">45</option>
+                                    <option value="30">50</option>
+                                    <option value="100">100</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
