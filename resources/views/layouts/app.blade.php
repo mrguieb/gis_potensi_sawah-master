@@ -46,7 +46,7 @@
                             <a class="nav-link" href="{{ route('home') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('info_tanah') }}">Land Information</a>
+                            <a class="nav-link" href="{{ route('info_tanah') }}">Crop Information</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('desa') }}">Barangays</a>

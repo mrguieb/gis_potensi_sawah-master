@@ -22,7 +22,7 @@
                             <div class="card">
                                 <div class="card-header bg-primary text-white text-center">
                                     <i class="fas fa-landmark fa-2x "></i>
-                                    <h5 class="card-title text-center">Soil Type</h5>
+                                    <h5 class="card-title text-center">crop type</h5>
                                 </div>
                                 <div class="card-body bg-dark text-white">
                                     <h1 class="text-center">{{ count($infotanah) }}</h1>

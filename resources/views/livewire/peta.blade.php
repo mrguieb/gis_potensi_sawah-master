@@ -32,6 +32,73 @@ var markerLayers = {};
 var originalColors = {};
 var petas = {!! json_encode($petas->toArray()) !!};
 
+// Debug: Log data to console to check for missing crop types
+console.log('Peta data loaded:', petas);
+console.log('Total farms found:', petas.length);
+
+// Collect all unique crop types for debugging
+const uniqueCrops = new Set();
+petas.forEach(function(item, index) {
+    console.log(`Farm ${index}:`, {
+        id: item.id,
+        crop: item.jenis_tanah,
+        owner: item.nama_pemiliklahan,
+        barangay: item.nama_desa,
+        hasBoundary: !!item.batas_lahan
+    });
+    
+    if (item.jenis_tanah) {
+        uniqueCrops.add(item.jenis_tanah);
+    }
+    
+    if (!item.jenis_tanah) {
+        console.warn(`Item ${index} (ID: ${item.id}) missing crop type:`, item);
+    }
+    if (!item.batas_lahan) {
+        console.warn(`Item ${index} (ID: ${item.id}) missing boundary data:`, item);
+    }
+});
+
+console.log('All unique crop types found:', Array.from(uniqueCrops));
+
+// Simple emoji crop icons with better matching
+function getCropIcon(type){
+    const t = (type || '').toString().toLowerCase().trim();
+    let emoji = '🌱'; // default
+    
+    console.log('Getting icon for crop type:', t); // Debug log
+    
+    if(t.includes('padi') || t.includes('rice') || t.includes('beras')) emoji = '🌾';
+    else if(t.includes('jagung') || t.includes('corn') || t.includes('maize')) emoji = '🌽';
+    else if(t.includes('sayur') || t.includes('veget') || t.includes('kangkung') || t.includes('bayam')) emoji = '🥬';
+    else if(t.includes('kopi') || t.includes('coffee')) emoji = '☕';
+    else if(t.includes('kelapa') || t.includes('coco') || t.includes('coconut')) emoji = '🥥';
+    else if(t.includes('kakao') || t.includes('cocoa') || t.includes('coklat')) emoji = '🍫';
+    else if(t.includes('tebu') || t.includes('sugarcane')) emoji = '🎋';
+    else if(t.includes('kacang') || t.includes('bean') || t.includes('soy')) emoji = '🫘';
+    else if(t.includes('tomat') || t.includes('tomato')) emoji = '🍅';
+    else if(t.includes('cabai') || t.includes('chili') || t.includes('pepper')) emoji = '🌶️';
+    else if(t.includes('pisang') || t.includes('banana')) emoji = '🍌';
+    else if(t.includes('mangga') || t.includes('mango')) emoji = '🥭';
+    else if(t.includes('calamasi') || t.includes('calamansi')) emoji = '🍋‍🟩';
+    else if(t.includes('durian')) emoji = '🟫';
+    else if(t.includes('rambutan')) emoji = '🔴';
+    else if(t.includes('singkong') || t.includes('cassava') || t.includes('tapioka')) emoji = '🥔';
+    else if(t.includes('ubi') || t.includes('sweet potato')) emoji = '🍠';
+    else if(t.includes('kentang') || t.includes('potato')) emoji = '🥔';
+    else if(t.includes('bawang') || t.includes('onion') || t.includes('garlic')) emoji = '🧅';
+    else if(t.includes('padi sawah') || t.includes('wet rice')) emoji = '🌾';
+    else if(t.includes('padi gogo') || t.includes('dry rice')) emoji = '🌾';
+    else if(t.includes('padi ladang') || t.includes('upland rice')) emoji = '🌾';
+
+    return L.divIcon({
+        className: 'crop-div-icon-' + Math.random().toString(36).substr(2, 9),
+        html: `<div style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#ffffffcc;border:2px solid #2e7d32;font-size:20px;box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${emoji}</div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+    });
+}
+
 // Unique colors based on ID
 function getColorFromId(id) {
     var hue = (id * 137.508) % 360; // golden angle
@@ -39,10 +106,20 @@ function getColorFromId(id) {
 }
 
 petas.forEach(function(item) {
-    if (!item.batas_lahan) return;
+    // Skip if no boundary data or if data is invalid
+    if (!item.batas_lahan || item.batas_lahan.trim() === '') {
+        console.log(`Skipping item ${item.id} - no boundary data`);
+        return;
+    }
 
     try {
         var geojson = JSON.parse(item.batas_lahan);
+        
+        // Skip if geojson is empty or invalid
+        if (!geojson || !geojson.features || geojson.features.length === 0) {
+            console.log(`Skipping item ${item.id} - invalid geojson`);
+            return;
+        }
 
         var strokeColor = getColorFromId(item.id);
         var fillColor = getColorFromId(item.id + 1000);
@@ -54,49 +131,85 @@ petas.forEach(function(item) {
         polygonLayers[item.id] = layer;
         originalColors[item.id] = { stroke: strokeColor, fill: fillColor };
 
-        // Popup for polygon
-        layer.bindPopup(
-            `<b>ID:</b> ${item.id}<br>
-            <b>Village:</b> ${item.nama_desa}<br>
-            <b>Land Owner:</b> ${item.nama_pemiliklahan}<br>
-            <b>Soil Type:</b> ${item.jenis_tanah}<br>
-            <b>Elevation:</b> ${item.ketinggian} mdpl<br>
-            <b>Humidity:</b> ${item.kelembaban}%<br>
-            <b>Land Area:</b> ${item.luas_lahan} m²`
-        );
+        // Detailed popup for polygon
+        const popupHtml = `
+            <div style="min-width:220px">
+                <div style="font-weight:700;margin-bottom:4px;">${item.jenis_tanah || 'Unknown Crop'}</div>
+                <div><strong>Barangay:</strong> ${item.nama_desa || '-'}</div>
+                <div><strong>Owner:</strong> ${item.nama_pemiliklahan || '-'}</div>
+                <div><strong>Land:</strong> ${item.luas_lahan || '-'} m²</div>
+            </div>`;
+        layer.bindPopup(popupHtml);
 
-        // Marker at polygon centroid
-        var latlngs = layer.getLayers()[0].getLatLngs()[0];
-        var centroid = latlngs.reduce((acc, val) => [acc[0]+val.lat, acc[1]+val.lng], [0,0]).map(v => v/latlngs.length);
+        // Get centroid using multiple methods for accuracy
+        var centroid;
+        
+        // Method 1: Try to get centroid from GeoJSON feature
+        try {
+            if (geojson.features && geojson.features.length > 0) {
+                var feature = geojson.features[0];
+                if (feature.geometry && feature.geometry.coordinates) {
+                    var coords = feature.geometry.coordinates[0]; // First ring of polygon
+                    if (coords && coords.length > 0) {
+                        var sumLat = 0, sumLng = 0;
+                        coords.forEach(function(coord) {
+                            sumLng += coord[0]; // longitude
+                            sumLat += coord[1]; // latitude
+                        });
+                        centroid = L.latLng(sumLat / coords.length, sumLng / coords.length);
+                        console.log(`Method 1 - GeoJSON centroid for farm ${item.id}:`, centroid);
+                    }
+                }
+            }
+        } catch (e) {
+            console.log('Method 1 failed:', e);
+        }
+        
+        // Method 2: Try to get centroid from layer geometry
+        if (!centroid) {
+            try {
+                if (layer.getLayers && layer.getLayers().length > 0) {
+                    var polygon = layer.getLayers()[0];
+                    if (polygon.getLatLngs && polygon.getLatLngs().length > 0) {
+                        var latlngs = polygon.getLatLngs()[0];
+                        if (latlngs && latlngs.length > 0) {
+                            var sumLat = 0, sumLng = 0;
+                            latlngs.forEach(function(point) {
+                                sumLat += point.lat;
+                                sumLng += point.lng;
+                            });
+                            centroid = L.latLng(sumLat / latlngs.length, sumLng / latlngs.length);
+                            console.log(`Method 2 - Layer centroid for farm ${item.id}:`, centroid);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log('Method 2 failed:', e);
+            }
+        }
+        
+        // Method 3: Fallback to bounds center
+        if (!centroid) {
+            var bounds = layer.getBounds();
+            centroid = bounds.getCenter();
+            console.log(`Method 3 - Bounds center for farm ${item.id}:`, centroid);
+        }
 
-        var marker = L.marker(centroid, {
-            icon: L.divIcon({
-                className: 'custom-marker',
-                html: `
-                    <div style="
-                        width: 40px;
-                        height: 40px;
-                        border: 3px solid black;
-                        border-radius: 50%;
-                        background: white;
-                        display:flex;
-                        justify-content:center;
-                        align-items:center;
-                        font-weight:bold;
-                        color: ${strokeColor};
-                        box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
-                    ">
-                        <i class="fa fa-map-marker" style="font-size: 22px;"></i>
-                    </div>
-                `,
-                iconSize: [40, 40],
-                iconAnchor: [20, 40],
-            })
+        // Create crop icon
+        var cropIcon = getCropIcon(item.jenis_tanah);
+        console.log(`Creating marker for farm ${item.id} with crop: ${item.jenis_tanah}, icon:`, cropIcon);
+        
+        var marker = L.marker(centroid, { 
+            icon: cropIcon,
+            title: item.jenis_tanah || 'Unknown Crop'
         }).addTo(map);
 
         // Marker popup
-        marker.bindPopup(`<b>Farmer:</b> ${item.nama_pemiliklahan}<br><b>Barangay:</b> ${item.nama_desa}`);
+        marker.bindPopup(popupHtml);
+        marker.bindTooltip(`${item.jenis_tanah || 'Unknown Crop'} — ${item.nama_pemiliklahan || 'Unknown Owner'}`, { direction: 'top' });
         markerLayers[item.id] = marker;
+        
+        console.log(`Marker created for farm ${item.id} at:`, centroid);
 
         // Zoom feature on polygon click
         layer.on('click', function() {
@@ -117,6 +230,10 @@ petas.forEach(function(item) {
     }
 });
 
+// Summary of markers created
+console.log(`Total markers created: ${Object.keys(markerLayers).length}`);
+console.log('Marker layers:', markerLayers);
+
 // SEARCH BAR
 var searchControl = L.control({ position: 'topright' });
 searchControl.onAdd = function(map) {
@@ -133,6 +250,46 @@ searchControl.onAdd = function(map) {
     return div;
 };
 searchControl.addTo(map);
+
+// Legend control for crop icons
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = function(){
+    const div = L.DomUtil.create('div', 'info legend');
+    div.style.background = '#ffffffcc';
+    div.style.padding = '8px 10px';
+    div.style.border = '1px solid #ccc';
+    div.style.borderRadius = '6px';
+    div.style.maxHeight = '180px';
+    div.style.overflowY = 'auto';
+
+    const entries = [
+        ['Rice', '🌾'],
+        ['Corn', '🌽'],
+        ['Vegetables', '🥬'],
+        ['calamansi', '🍋‍🟩'],
+        ['Coffee', '☕'],
+        ['Coconut', '🥥'],
+        ['Cocoa', '🍫'],
+        ['Sugarcane', '🎋'],
+        ['Beans', '🫘'],
+        ['Tomato', '🍅'],
+        [' Chili', '🌶️'],
+        ['Banana', '🍌'],
+        ['Mango', '🥭'],
+        ['Cassava', '🥔'],
+        ['Sweet Potato', '🍠'],
+        ['Onion', '🧅'],
+        ['🌱 Other Crops', '🌱'],
+    ];
+    div.innerHTML = entries.map(([label, svg]) => (
+        `<div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+            <span style="display:inline-block;width:20px;height:20px;">${svg}</span>
+            <span style="font-size:12px;">${label}</span>
+        </div>`
+    )).join('');
+    return div;
+};
+legend.addTo(map);
 
 function searchPeta(query) {
     var resultsDiv = document.getElementById('searchResults');
@@ -180,6 +337,23 @@ function searchPeta(query) {
 
 document.getElementById('petaSearch').addEventListener('input', function() {
     searchPeta(this.value);
+});
+
+// Refresh map when Livewire updates
+document.addEventListener('livewire:load', function() {
+    console.log('Livewire loaded - peta map should be ready');
+});
+
+document.addEventListener('livewire:update', function() {
+    console.log('Livewire updated - refreshing peta map data');
+    // Clear existing layers
+    Object.values(polygonLayers).forEach(layer => map.removeLayer(layer));
+    Object.values(markerLayers).forEach(marker => map.removeLayer(marker));
+    polygonLayers = {};
+    markerLayers = {};
+    
+    // Reload data (this will be handled by the page refresh)
+    location.reload();
 });
 </script>
 @endpush

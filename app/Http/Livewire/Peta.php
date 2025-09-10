@@ -19,6 +19,8 @@ class Peta extends Component
             ->join('pemiliklahans', 'pemiliklahans.id', '=', 'potensis.pemiliklahan_id')
             ->join('infotanahs', 'infotanahs.id', '=', 'potensis.infotanah_id')
             ->select('potensis.*', 'desas.nama_desa', 'pemiliklahans.nama_pemiliklahan', 'infotanahs.jenis_tanah', 'infotanahs.ketinggian', 'infotanahs.kelembaban')
+            ->whereNotNull('potensis.batas_lahan') // Only records with boundary data
+            ->where('potensis.batas_lahan', '!=', '') // Exclude empty boundary data
             ->get();
         return view('livewire.peta', [
             'petas' => $this->petas,

@@ -132,9 +132,9 @@
                     <th>No</th>
                     <th>Barangay Name</th>
                     <th>Farmer / Land Owner</th>
-                    <th>Soil Type</th>
-                    <th>Elevation (mpdl)</th>
-                    <th>Humidity (%)</th>
+                    <th>crop type</th>
+                    {{-- <th>Elevation (mpdl)</th> --}}
+                    {{-- <th>Humidity (%)</th> --}}
                     <th>Land Area (Ha)</th>
                 </tr>
             </thead>
@@ -145,8 +145,8 @@
                         <td>{{ $item->nama_desa }}</td>
                         <td>{{ $item->nama_pemiliklahan }}</td>
                         <td>{{ $item->jenis_tanah }}</td>
-                        <td>{{ $item->ketinggian }}</td>
-                        <td>{{ $item->kelembaban }}</td>
+                        {{-- <td>{{ $item->ketinggian }}</td> --}}
+                        {{-- <td>{{ $item->kelembaban }}</td> --}}
                         <td>{{ $item->luas_lahan }}</td>
                     </tr>
                 @empty
@@ -167,7 +167,7 @@
             <div class="signature-box">
                 <p><strong>__________________</strong></p>
                 <p>Head of Department</p>
-                <p>Dinas Pertanian</p>
+                {{-- <p>Dinas Pertanian</p> --}}
                 <div class="signature-line"></div>
             </div>
         </div>
