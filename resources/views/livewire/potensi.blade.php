@@ -94,16 +94,23 @@
                                             </div>
 
                                             <!-- Farmer -->
-                                            <div class="mt-2">
+                                            <div class="mt-2" style="position: relative;">
                                                 <label>Farmer/Land Owner</label>
-                                                <select wire:model="pemiliklahan_id" class="form-control">
-                                                    <option value="">Pick Farmer/Land Owner</option>
-                                                    @foreach($pemiliklahan as $p)
-                                                        <option value="{{ $p->id }}">{{ $p->nama_pemiliklahan }}</option>
-                                                    @endforeach
-                                                </select>
+                                                <input type="text" wire:model="searchFarmer" class="form-control" placeholder="Search Farmer/Land Owner...">
                                                 @error('pemiliklahan_id') <span class="text-danger">{{ $message }}</span> @enderror
+
+                                                @if(!empty($pemiliklahan) && strlen($searchFarmer) > 0)
+                                                    <ul class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 150px; overflow-y: auto;">
+                                                        @foreach($pemiliklahan as $p)
+                                                            <li class="list-group-item list-group-item-action" 
+                                                                wire:click="selectFarmer({{ $p->id }}, '{{ $p->nama_pemiliklahan }}')">
+                                                                {{ $p->nama_pemiliklahan }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
                                             </div>
+
 
                                             <!-- Crop Type -->
                                             <div class="mt-2">

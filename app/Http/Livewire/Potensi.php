@@ -15,11 +15,14 @@ class Potensi extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $search = '';
+    public $searchFarmer = ''; // Search text for farmer
     public $perPage = 5;
     public $desa_id, $pemiliklahan_id, $infotanah_id, $luas_lahan, $potensi_id;
-    public $batas_lahan = ''; // must be string, not array
+    public $batas_lahan = '';
     public $isTambah = false;
     public $isUpdate = false;
+
+    public $pemiliklahan = []; // List of farmers for suggestions
 
     protected $updatesQueryString = ['search', 'perPage'];
 
@@ -41,6 +44,23 @@ class Potensi extends Component
         'batas_lahan.required'     => 'You must draw or upload the land boundaries.',
     ];
 
+    public function updatedSearchFarmer()
+    {
+        // Only search if at least 1 character entered
+        if (strlen($this->searchFarmer) > 0) {
+            $this->pemiliklahan = ModelsPemiliklahan::where('nama_pemiliklahan', 'like', '%' . $this->searchFarmer . '%')->get();
+        } else {
+            $this->pemiliklahan = [];
+        }
+    }
+
+    public function selectFarmer($id, $name)
+    {
+        $this->pemiliklahan_id = $id;
+        $this->searchFarmer = $name;
+        $this->pemiliklahan = []; // Clear dropdown after selection
+    }
+
     public function render()
     {
         $potensi = ModelsPotensi::join('desas', 'desas.id', '=', 'potensis.desa_id')
@@ -58,12 +78,10 @@ class Potensi extends Component
             ->paginate($this->perPage);
 
         $desa = ModelsDesa::all();
-        $pemiliklahan = ModelsPemiliklahan::all();
         $infotanah = ModelsInfotanah::all();
-
         $lahan = $this->getLahanData();
 
-        return view('livewire.potensi', compact('potensi', 'desa', 'pemiliklahan', 'infotanah', 'lahan'))
+        return view('livewire.potensi', compact('potensi', 'desa', 'infotanah', 'lahan'))
             ->extends('layouts.app')->section('content');
     }
 
@@ -84,6 +102,8 @@ class Potensi extends Component
         $this->luas_lahan = '';
         $this->batas_lahan = '';
         $this->potensi_id = '';
+        $this->searchFarmer = '';
+        $this->pemiliklahan = [];
         $this->isTambah = false;
         $this->isUpdate = false;
     }
@@ -106,6 +126,10 @@ class Potensi extends Component
         $this->infotanah_id = $potensi->infotanah_id;
         $this->luas_lahan = $potensi->luas_lahan;
         $this->batas_lahan = $potensi->batas_lahan;
+
+        // Pre-fill the farmer name for editing
+        $farmer = ModelsPemiliklahan::find($potensi->pemiliklahan_id);
+        $this->searchFarmer = $farmer ? $farmer->nama_pemiliklahan : '';
 
         $this->isTambah = $this->isUpdate = true;
         $this->dispatchBrowserEvent('open-potensi-modal');
