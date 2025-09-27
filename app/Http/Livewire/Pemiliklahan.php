@@ -13,13 +13,9 @@ class Pemiliklahan extends Component
 
     public $search;
     public $perPage = 5;
-
     public $nama_pemiliklahan, $alamat_pemiliklahan, $no_hp_pemiliklahan, $email_pemiliklahan, $pemiliklahan_id;
     protected $pemiliklahans;
 
-    /**
-     * ✅ Validation rules
-     */
     protected $rules = [
         'nama_pemiliklahan'   => 'required|string|max:255',
         'alamat_pemiliklahan' => 'required|string|max:255',
@@ -27,9 +23,6 @@ class Pemiliklahan extends Component
         'email_pemiliklahan'  => 'nullable|email',
     ];
 
-    /**
-     * ✅ Custom validation messages (English)
-     */
     protected $messages = [
         'nama_pemiliklahan.required'   => 'Owner name is required.',
         'nama_pemiliklahan.string'     => 'Owner name must be text.',
@@ -44,6 +37,16 @@ class Pemiliklahan extends Component
 
         'email_pemiliklahan.email'     => 'Please enter a valid email address.',
     ];
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
@@ -86,7 +89,7 @@ class Pemiliklahan extends Component
 
         session()->flash('message', 'Land owner successfully added.');
         $this->resetInputFields();
-        $this->emit('pemiliklahanStore'); // Close modal with jQuery
+        $this->emit('pemiliklahanStore');
     }
 
     public function update()
@@ -98,7 +101,7 @@ class Pemiliklahan extends Component
             $pemiliklahan->update($validatedData);
 
             $this->resetInputFields();
-            $this->emit('pemiliklahanUpdate'); // Close modal with jQuery
+            $this->emit('pemiliklahanUpdate');
             session()->flash('message', 'Land owner successfully updated.');
         }
     }

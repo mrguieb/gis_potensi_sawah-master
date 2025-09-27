@@ -62,7 +62,7 @@
                                                 <td>{{ $item->nama_kecamatan }}</td>
                                                 <td>{{ $item->luas_wilayah }}</td>
                                                 <td>
-                                                    <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal" wire:click="desaId({{ $item->id }})">Edit</a>
+                                                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" wire:click="desaId({{ $item->id }})">Edit</a>
                                                     <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" wire:click="desaId({{ $item->id }})">Delete</a>
 
                                                 </td>

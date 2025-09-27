@@ -14,24 +14,28 @@ class Desa extends Component
 
     public $search;
     public $perPage = 10;
-    public $nama_desa, $kecamatan,$kecamatans_id, $luas_wilayah, $desa_id, $kecamatan_id, $nama_kecamatan;
+    public $nama_desa, $kecamatans_id, $luas_wilayah, $desa_id;
 
     protected $desas, $kecamatans;
 
     // ✅ Custom validation messages
     protected $messages = [
-        'nama_desa.required'   => 'Barangay name is required.',
-        'kecamatan_id.required' => 'Please select a district.',
-        'luas_wilayah.required' => 'Number of farmers is required.',
-        'luas_wilayah.numeric'  => 'Number of farmers must be a number.',
+        'nama_desa.required'    => 'Barangay name is required.',
+        'kecamatans_id.required' => 'Please select a district.',
+        'luas_wilayah.required'  => 'Number of farmers is required.',
+        'luas_wilayah.numeric'   => 'Number of farmers must be a number.',
     ];
 
     public function render()
     {
-        $this->desas = ModelsDesa::join('kecamatans', 'desas.kecamatans_id', '=', 'kecamatans.id')
-            ->select('desas.*', 'kecamatans.nama_kecamatan')
-            ->where('nama_desa', 'like', '%' . $this->search . '%')
-            ->orWhere('nama_kecamatan', 'like', '%' . $this->search . '%')
+        // ✅ Use Eloquent relationships with eager loading
+        $this->desas = ModelsDesa::with(['kecamatan', 'pemiliklahans'])
+            ->where(function($query) {
+                $query->where('nama_desa', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('kecamatan', function($q) {
+                          $q->where('nama_kecamatan', 'like', '%' . $this->search . '%');
+                      });
+            })
             ->paginate($this->perPage);
 
         $this->kecamatans = Kecamatan::all();
@@ -50,25 +54,26 @@ class Desa extends Component
         $this->desa_id = '';
     }
 
-    public function desaId($id){
-        $this->desa_id = $id;
-
+    public function desaId($id)
+    {
         $desa = ModelsDesa::find($id);
+        $this->desa_id = $id;
         $this->nama_desa = $desa->nama_desa;
         $this->kecamatans_id = $desa->kecamatans_id;
         $this->luas_wilayah = $desa->luas_wilayah;
     }
 
-    public function store(){
+    public function store()
+    {
         $this->validate([
             'nama_desa' => 'required|string|max:255',
-            'kecamatan_id' => 'required|exists:kecamatans,id',
+            'kecamatans_id' => 'required|exists:kecamatans,id',
             'luas_wilayah' => 'required|numeric|min:1',
         ]);
 
         ModelsDesa::create([
             'nama_desa' => $this->nama_desa,
-            'kecamatans_id' => $this->kecamatan_id,
+            'kecamatans_id' => $this->kecamatans_id,
             'luas_wilayah' => $this->luas_wilayah,
         ]);
 
@@ -76,10 +81,11 @@ class Desa extends Component
         $this->resetFields();
     }
 
-    public function update(){
+    public function update()
+    {
         $this->validate([
             'nama_desa' => 'required|string|max:255',
-            'kecamatan_id' => 'required|exists:kecamatans,id',
+            'kecamatans_id' => 'required|exists:kecamatans,id',
             'luas_wilayah' => 'required|numeric|min:1',
         ]);
 
@@ -87,15 +93,17 @@ class Desa extends Component
             $desa = ModelsDesa::find($this->desa_id);
             $desa->update([
                 'nama_desa' => $this->nama_desa,
-                'kecamatans_id' => $this->kecamatan_id,
+                'kecamatans_id' => $this->kecamatans_id,
                 'luas_wilayah' => $this->luas_wilayah,
             ]);
+
             session()->flash('message', 'Barangay updated successfully!');
             $this->resetFields();
         }
     }
 
-    public function destroy(){
+    public function destroy()
+    {
         if ($this->desa_id) {
             $desa = ModelsDesa::find($this->desa_id);
             $desa->delete();
