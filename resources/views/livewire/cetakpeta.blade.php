@@ -6,14 +6,30 @@
     <style>
         body {
             font-family: "Times New Roman", serif;
-            margin: 40px;
+            margin: 0;
             font-size: 12px;
             color: #000;
         }
+
+        @page {
+            margin: 30px;
+        }
+
         .frame {
             border: 2px solid #000;
             padding: 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            page-break-inside: avoid;
         }
+
+        /* Main content grows */
+        .content {
+            flex: 1;
+        }
+
         /* Header */
         .header {
             text-align: center;
@@ -76,29 +92,28 @@
 
         /* Signatures */
         .signatures {
-            margin-top: 60px;
-            width: 100%;
+            margin-top: auto; /* push signatures to bottom */
             display: flex;
             justify-content: space-between;
+            padding-top: 40px;
         }
         .signature-box {
             text-align: center;
             width: 45%;
         }
-        .signature-box p {
-            margin: 4px 0;
-        }
         .signature-line {
-            margin-top: 60px;
             border-top: 1px solid #000;
             width: 80%;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto 5px auto;
+            height: 2px;
+        }
+        .signature-box p {
+            margin: 2px 0;
         }
 
         /* Footer */
         .generated {
-            margin-top: 40px;
+            margin-top: 20px;
             text-align: right;
             font-size: 11px;
             font-style: italic;
@@ -107,68 +122,65 @@
 </head>
 <body>
     <div class="frame">
-        <!-- Header -->
-        <div class="header">
-            <img src="https://lgubangar.gov.ph/wp-content/uploads/2021/10/cropped-tablogo.png" alt="Logo Left" class="logo-left">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Bagong_Pilipinas_logo.png" alt="Logo Right" class="logo-right">
-            
-            <h2>AGRI BANGAR</h2>
-            <h3>OFFICE FOR AGRICULTURAL SERVICES</h3>
-            <h4>Land Information Report</h4>
+        <div class="content">
+            <!-- Header -->
+            <div class="header">
+                <img src="https://lgubangar.gov.ph/wp-content/uploads/2021/10/cropped-tablogo.png" alt="Logo Left" class="logo-left">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Bagong_Pilipinas_logo.png" alt="Logo Right" class="logo-right">
+                
+                <h2>AGRI BANGAR</h2>
+                <h3>OFFICE FOR AGRICULTURAL SERVICES</h3>
+                <h4>Land Information Report</h4>
 
-            @if($petas->isNotEmpty())
-                <div class="report-meta">
-                    Year: {{ $tahun ?? 'Semua' }} |
-                     {{ $kecamatan ?? ($petas->first()->nama_kecamatan ?? '-') }} |
-                    Barangay: {{ $desa ?? ($petas->first()->nama_desa ?? '-') }}
-                </div>
-            @endif
+                @if($petas->isNotEmpty())
+                    <div class="report-meta">
+                        Year: {{ $tahun ?? 'All' }} |
+                        {{ $kecamatan ?? ($petas->first()->nama_kecamatan ?? '-') }} |
+                        Barangay: {{ $desa ?? ($petas->first()->nama_desa ?? '-') }}
+                    </div>
+                @endif
+            </div>
+
+            <!-- Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Barangay Name</th>
+                        <th>Farmer / Land Owner</th>
+                        <th>Crop Type</th>
+                        <th>Land Area (Ha)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($petas as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $item->nama_desa }}</td>
+                            <td>{{ $item->nama_pemiliklahan }}</td>
+                            <td>{{ $item->jenis_tanah }}</td>
+                            <td>{{ $item->luas_lahan }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5">No Data Available</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-
-        <!-- Table -->
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Barangay Name</th>
-                    <th>Farmer / Land Owner</th>
-                    <th>crop type</th>
-                    {{-- <th>Elevation (mpdl)</th> --}}
-                    {{-- <th>Humidity (%)</th> --}}
-                    <th>Land Area (Ha)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($petas as $index => $item)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $item->nama_desa }}</td>
-                        <td>{{ $item->nama_pemiliklahan }}</td>
-                        <td>{{ $item->jenis_tanah }}</td>
-                        {{-- <td>{{ $item->ketinggian }}</td> --}}
-                        {{-- <td>{{ $item->kelembaban }}</td> --}}
-                        <td>{{ $item->luas_lahan }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7">No Data Available</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
 
         <!-- Signatures -->
         <div class="signatures">
             <div class="signature-box">
+                <div class="signature-line"></div>
                 <p><strong>Regina M. Labiano</strong></p>
                 <p>Municipal Agriculturist</p>
-                <div class="signature-line"></div>
             </div>
             <div class="signature-box">
+                <div class="signature-line"></div>
                 <p><strong>__________________</strong></p>
                 <p>Head of Department</p>
-                {{-- <p>Dinas Pertanian</p> --}}
-                <div class="signature-line"></div>
             </div>
         </div>
 
