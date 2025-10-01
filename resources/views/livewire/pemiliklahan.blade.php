@@ -53,18 +53,18 @@
                                                 <th>Name</th>
                                                 <th>Address</th>
                                                 <th>Contact Number</th>
-                                                <th>Email</th>
+                                                {{-- <th>Email</th> --}}
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse ($pemiliklahans as $item)
+                                            @forelse ($landowners as $item)
                                             <tr>
-                                                <td>{{ $loop->iteration + ($pemiliklahans->currentPage() - 1) * $pemiliklahans->perPage() }}</td>
-                                                <td>{{ $item->nama_pemiliklahan }}</td>
-                                                <td>{{ $item->alamat_pemiliklahan }}</td>
-                                                <td>{{ $item->no_hp_pemiliklahan }}</td>
-                                                <td>{{ $item->email_pemiliklahan }}</td>
+                                                <td>{{ $loop->iteration + ($landowners->currentPage() - 1) * $landowners->perPage() }}</td>
+                                                <td>{{ $item->farmer_name }}</td>
+                                                <td>{{ $item->farmer_barangay }}</td>
+                                                <td>{{ $item->farmer_number }}</td>
+                                                {{-- <td>{{ $item->farmer_email }}</td> --}}
                                                 <td>
                                                     <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" wire:click="pemiliklahanId({{ $item->id }})">Edit</a>
                                                     <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" wire:click="pemiliklahanId({{ $item->id }})">Delete</a>
@@ -83,7 +83,7 @@
 
                         {{-- Pagination Links --}}
                         <div class="mt-3">
-                            {{ $pemiliklahans->links() }}
+                            {{ $landowners->links() }}
                         </div>
 
                     </div>
@@ -104,24 +104,24 @@
                     <form wire:submit.prevent="store">
                         <div class="form-group mb-3">
                             <label>Name</label>
-                            <input type="text" class="form-control" wire:model="nama_pemiliklahan">
-                            @error('nama_pemiliklahan') <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" class="form-control" wire:model="farmer_name">
+                            @error('farmer_name') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group mb-3">
                             <label>Address</label>
-                            <input type="text" class="form-control" wire:model="alamat_pemiliklahan">
-                            @error('alamat_pemiliklahan') <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" class="form-control" wire:model="farmer_barangay">
+                            @error('farmer_barangay') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group mb-3">
                             <label>Contact Number</label>
-                            <input type="text" class="form-control" wire:model="no_hp_pemiliklahan">
-                            @error('no_hp_pemiliklahan') <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" class="form-control" wire:model="farmer_number">
+                            @error('farmer_number') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
-                        <div class="form-group mb-3">
+                        {{-- <div class="form-group mb-3">
                             <label>Email</label>
-                            <input type="text" class="form-control" wire:model="email_pemiliklahan">
-                            @error('email_pemiliklahan') <span class="text-danger">{{ $message }}</span> @enderror
-                        </div>
+                            <input type="text" class="form-control" wire:model="farmer_email">
+                            @error('farmer_email') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div> --}}
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save</button>
@@ -144,23 +144,23 @@
                     <form wire:submit.prevent="update">
                         <div class="form-group mb-3">
                             <label>Name</label>
-                            <input type="text" class="form-control" wire:model="nama_pemiliklahan">
-                            @error('nama_pemiliklahan') <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" class="form-control" wire:model="farmer_name">
+                            @error('farmer_name') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group mb-3">
                             <label>Address</label>
-                            <input type="text" class="form-control" wire:model="alamat_pemiliklahan">
-                            @error('alamat_pemiliklahan') <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" class="form-control" wire:model="farmer_barangay">
+                            @error('farmer_barangay') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group mb-3">
                             <label>Contact Number</label>
-                            <input type="text" class="form-control" wire:model="no_hp_pemiliklahan">
-                            @error('no_hp_pemiliklahan') <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" class="form-control" wire:model="farmer_number">
+                            @error('farmer_number') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="form-group mb-3">
                             <label>Email</label>
-                            <input type="text" class="form-control" wire:model="email_pemiliklahan">
-                            @error('email_pemiliklahan') <span class="text-danger">{{ $message }}</span> @enderror
+                            <input type="text" class="form-control" wire:model="farmer_email">
+                            @error('farmer_email') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -177,7 +177,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Remove Farmer/Landowner</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Remove Farmer/landowners</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">

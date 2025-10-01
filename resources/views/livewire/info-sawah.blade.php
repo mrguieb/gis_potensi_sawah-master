@@ -48,9 +48,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse ($infotanahs as $item)
+                                            @forelse ($crops as $item)
                                             <tr>
-                                                <td>{{ $item->jenis_tanah }}</td>
+                                                <td>{{ $item->crop_type }}</td>
                                                 <td>
                                                     <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" wire:click="tanahId({{ $item->id }})">Edit</a>
                                                     <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" wire:click="tanahId({{ $item->id }})">Delete</a>
@@ -83,18 +83,18 @@
                 <div class="modal-body text-left">
                     <form wire:submit.prevent="store">
                         <div class="form-group">
-                            <label for="jenis_tanah">{{ __('Crop Type') }}</label>
-                            <select id="jenis_tanah" class="form-control @error('jenis_tanah') is-invalid @enderror" wire:model="jenis_tanah" required>
+                            <label for="crop_type">{{ __('Crop Type') }}</label>
+                            <select id="crop_type" class="form-control @error('crop_type') is-invalid @enderror" wire:model="crop_type" required>
                                 <option value="">-- Select Crop --</option>
                                 <option value="Palay/Rice">Palay/Rice</option>
                                 <option value="Calamansi">Calamansi</option>
                                 <option value="Corn">Corn</option>
                             </select>
-                            @error('jenis_tanah')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                            @error('crop_type')<span class="invalid-feedback">{{ $message }}</span>@enderror
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @if($jenis_tanah=='') disabled @endif>Add</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @if($crop_type=='') disabled @endif>Add</button>
                         </div>
                     </form>
                 </div>
@@ -113,18 +113,18 @@
                 <div class="modal-body text-left">
                     <form wire:submit.prevent="update">
                         <div class="form-group">
-                            <label for="jenis_tanah">{{ __('Crop Type') }}</label>
-                            <select id="jenis_tanah" class="form-control @error('jenis_tanah') is-invalid @enderror" wire:model="jenis_tanah" required>
+                            <label for="crop_type">{{ __('Crop Type') }}</label>
+                            <select id="crop_type" class="form-control @error('crop_type') is-invalid @enderror" wire:model="crop_type" required>
                                 <option value="">-- Select Crop --</option>
                                 <option value="Palay/Rice">Palay/Rice</option>
                                 <option value="Calamansi">Calamansi</option>
                                 <option value="Corn">Corn</option>
                             </select>
-                            @error('jenis_tanah')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                            @error('crop_type')<span class="invalid-feedback">{{ $message }}</span>@enderror
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @if($jenis_tanah=='') disabled @endif>Update</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @if($crop_type=='') disabled @endif>Update</button>
                         </div>
                     </form>
                 </div>

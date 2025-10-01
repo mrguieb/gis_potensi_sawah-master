@@ -102,6 +102,7 @@
                         <a href="#desa" class="nav-item nav-link">Barangay/Village Data</a>
                         <a href="#lahan" class="nav-item nav-link">Land Data</a>
                         <a href="#potensi" class="nav-item nav-link">Agcricultural Map</a>
+                        <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                     </div>
                 </div>
             </nav>
@@ -120,7 +121,7 @@
                         <div class="p-3" style="max-width: 900px;">
                             <h4 class="text-white text-uppercase mb-md-3">Welcome to the website</h4>
                             <h2 class="display-4 text-white mb-md-4 text-bold text-uppercase ">AGRI BANGAR <br> OFFICE FOR AGRICULTURAL SERVICES</h2>
-                            {{-- <a href="#" class="btn btn-primary py-md-3 px-md-5 mt-2">Learn More</a> --}}
+                            <a href="#" class="btn btn-primary py-md-3 px-md-5 mt-2">Learn More</a>
                         </div>
                     </div>
                 </div>
@@ -342,19 +343,19 @@ carousel.addEventListener('touchend', e => {
             <table class="table table-bordered table-hover text-center align-middle">
                 <thead class="thead-dark">
                     <tr>
-                        <th>#</th>
+                        {{-- <th>#</th> --}}
                         <th>Barangay / Village Name</th>
                         <th>No. Of Farmers</th>
-                        <th>District</th>
+                        {{-- <th>Municipality</th> --}}
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($desas as $index => $desa)
+                    @foreach($barangays as $index => $desa)
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td class="text-uppercase">{{ $desa->nama_desa }}</td>
-                        <td>{{ $desa->luas_wilayah ?? 'N/A' }}</td>
-                        <td>{{ $desa->nama_kecamatan ?? 'N/A' }}</td>
+                        {{-- <td>{{ $index + 1 }}</td> --}}
+                        <td class="text-uppercase">{{ $desa->barangay_name }}</td>
+                        <td>{{ $desa->number_of_farmers ?? 'N/A' }}</td>
+                        {{-- <td>{{ $desa->town_name ?? 'N/A' }}</td> --}}
                     </tr>
                     @endforeach
                 </tbody>
@@ -552,8 +553,8 @@ var petas = {!! json_encode($petas->toArray()) !!};
 var barangaySet = new Set();
 var cropSet = new Set();
 petas.forEach(item => {
-    if(item.nama_desa) barangaySet.add(item.nama_desa);
-    if(item.jenis_tanah) cropSet.add(item.jenis_tanah);
+    if(item.barangay_name) barangaySet.add(item.barangay_name);
+    if(item.crop_type) cropSet.add(item.crop_type);
 });
 
 // Function to generate crop icons
@@ -596,9 +597,9 @@ function getColorFromId(id) {
 
 // Create polygons and markers
 petas.forEach(function(item) {
-    if (!item.batas_lahan || item.batas_lahan.trim() === '') return;
+    if (!item.land_boundaries || item.land_boundaries.trim() === '') return;
     try {
-        var geojson = JSON.parse(item.batas_lahan);
+        var geojson = JSON.parse(item.land_boundaries);
         if (!geojson || !geojson.features || geojson.features.length === 0) return;
 
         var strokeColor = getColorFromId(item.id);
@@ -612,13 +613,13 @@ petas.forEach(function(item) {
         var centroid = bounds.getCenter();
 
         var popupHtml = `<div style="min-width:180px">
-            <b>${item.jenis_tanah || 'Unknown Crop'}</b><br>
-            Barangay: ${item.nama_desa || '-'}<br>
-            Owner: ${item.nama_pemiliklahan || '-'}<br>
-            Land Area: ${item.luas_lahan || '-'} m²
+            <b>${item.crop_type || 'Unknown Crop'}</b><br>
+            Barangay: ${item.barangay_name || '-'}<br>
+            Owner: ${item.farmer_name || '-'}<br>
+            Land Area: ${item.land_area || '-'} m²
         </div>`;
 
-        var marker = L.marker(centroid, { icon: getCropIcon(item.jenis_tanah) }).addTo(map);
+        var marker = L.marker(centroid, { icon: getCropIcon(item.crop_type) }).addTo(map);
         marker.bindPopup(popupHtml);
         layer.bindPopup(popupHtml);
         markerLayers[item.id] = marker;
@@ -671,11 +672,11 @@ function applyFilters() {
     var foundAny = false;
 
     petas.forEach(item => {
-        var matchesSearch = !query || item.nama_desa.toLowerCase().includes(query) || 
-            item.nama_pemiliklahan.toLowerCase().includes(query) || 
-            item.jenis_tanah.toLowerCase().includes(query);
-        var matchesBarangay = !selectedBarangay || item.nama_desa === selectedBarangay;
-        var matchesCrop = !selectedCrop || item.jenis_tanah === selectedCrop;
+        var matchesSearch = !query || item.barangay_name.toLowerCase().includes(query) || 
+            item.farmer_name.toLowerCase().includes(query) || 
+            item.crop_type.toLowerCase().includes(query);
+        var matchesBarangay = !selectedBarangay || item.barangay_name === selectedBarangay;
+        var matchesCrop = !selectedCrop || item.crop_type === selectedCrop;
 
         var visible = matchesSearch && matchesBarangay && matchesCrop;
 
@@ -694,7 +695,7 @@ function applyFilters() {
             div.style.padding = '3px';
             div.style.borderBottom = '1px solid #ddd';
             div.style.cursor = 'pointer';
-            div.innerHTML = `<b>${item.nama_desa}</b><br>Owner: ${item.nama_pemiliklahan}<br>Crop: ${item.jenis_tanah}`;
+            div.innerHTML = `<b>${item.barangay_name}</b><br>Owner: ${item.farmer_name}<br>Crop: ${item.crop_type}`;
             div.onclick = function() {
                 map.fitBounds(polygonLayers[item.id].getBounds());
                 polygonLayers[item.id].openPopup();

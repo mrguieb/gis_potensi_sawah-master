@@ -16,11 +16,11 @@
 
                 {{-- Kecamatan --}}
                 <div class="col-md-4">
-                    <label>District</label>
+                    <label>Municipality</label>
                     <select class="form-control" wire:model="kecamatan">
-                        <option value="">Select District</option>
-                        @foreach ($kecamatans as $item)
-                            <option value="{{ $item->id }}">{{ $item->nama_kecamatan }}</option>
+                        <option value="">Select Municipality</option>
+                        @foreach ($town as $item)
+                            <option value="{{ $item->id }}">{{ $item->town_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -30,8 +30,8 @@
                     <label>Barangay</label>
                     <select class="form-control" wire:model="desa">
                         <option value="">Select Barangay</option>
-                        @foreach ($desas as $item)
-                            <option value="{{ $item->id }}">{{ $item->nama_desa }}</option>
+                        @foreach ($barangays as $item)
+                            <option value="{{ $item->id }}">{{ $item->barangay_name }}</option>
                         @endforeach
                     </select>
                 </div>

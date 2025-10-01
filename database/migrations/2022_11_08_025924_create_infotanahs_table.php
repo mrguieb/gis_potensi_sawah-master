@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('infotanahs', function (Blueprint $table) {
+        Schema::create('crops', function (Blueprint $table) {
             $table->id();
-            $table->string('jenis_tanah');
+            $table->string('crop_type');
             $table->string('ketinggian');
             $table->string('kelembaban');
             $table->timestamps();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('infotanahs');
+        Schema::dropIfExists('crops');
     }
 };

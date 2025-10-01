@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Infotanah extends Model
 {
     use HasFactory;
-    protected $table = 'infotanahs';
+    protected $table = 'crops';
     protected $fillable = [
-        'jenis_tanah',
+        'crop_type',
         'ketinggian',
         'kelembaban',
     ];

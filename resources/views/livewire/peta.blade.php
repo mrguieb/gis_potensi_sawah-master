@@ -36,8 +36,8 @@ var petas = {!! json_encode($petas->toArray()) !!};
 var barangaySet = new Set();
 var cropSet = new Set();
 petas.forEach(item => {
-    if(item.nama_desa) barangaySet.add(item.nama_desa);
-    if(item.jenis_tanah) cropSet.add(item.jenis_tanah);
+    if(item.barangay_name) barangaySet.add(item.barangay_name);
+    if(item.crop_type) cropSet.add(item.crop_type);
 });
 
 // Function to generate crop icons
@@ -80,9 +80,9 @@ function getColorFromId(id) {
 
 // Create polygons and markers
 petas.forEach(function(item) {
-    if (!item.batas_lahan || item.batas_lahan.trim() === '') return;
+    if (!item.land_boundaries || item.land_boundaries.trim() === '') return;
     try {
-        var geojson = JSON.parse(item.batas_lahan);
+        var geojson = JSON.parse(item.land_boundaries);
         if (!geojson || !geojson.features || geojson.features.length === 0) return;
 
         var strokeColor = getColorFromId(item.id);
@@ -96,13 +96,13 @@ petas.forEach(function(item) {
         var centroid = bounds.getCenter();
 
         var popupHtml = `<div style="min-width:180px">
-            <b>${item.jenis_tanah || 'Unknown Crop'}</b><br>
-            Barangay: ${item.nama_desa || '-'}<br>
-            Owner: ${item.nama_pemiliklahan || '-'}<br>
-            Land Area: ${item.luas_lahan || '-'} m²
+            <b>${item.crop_type || 'Unknown Crop'}</b><br>
+            Barangay: ${item.barangay_name || '-'}<br>
+            Owner: ${item.farmer_name || '-'}<br>
+            Land Area: ${item.land_area || '-'} m²
         </div>`;
 
-        var marker = L.marker(centroid, { icon: getCropIcon(item.jenis_tanah) }).addTo(map);
+        var marker = L.marker(centroid, { icon: getCropIcon(item.crop_type) }).addTo(map);
         marker.bindPopup(popupHtml);
         layer.bindPopup(popupHtml);
         markerLayers[item.id] = marker;
@@ -155,11 +155,11 @@ function applyFilters() {
     var foundAny = false;
 
     petas.forEach(item => {
-        var matchesSearch = !query || item.nama_desa.toLowerCase().includes(query) || 
-            item.nama_pemiliklahan.toLowerCase().includes(query) || 
-            item.jenis_tanah.toLowerCase().includes(query);
-        var matchesBarangay = !selectedBarangay || item.nama_desa === selectedBarangay;
-        var matchesCrop = !selectedCrop || item.jenis_tanah === selectedCrop;
+        var matchesSearch = !query || item.barangay_name.toLowerCase().includes(query) || 
+            item.farmer_name.toLowerCase().includes(query) || 
+            item.crop_type.toLowerCase().includes(query);
+        var matchesBarangay = !selectedBarangay || item.barangay_name === selectedBarangay;
+        var matchesCrop = !selectedCrop || item.crop_type === selectedCrop;
 
         var visible = matchesSearch && matchesBarangay && matchesCrop;
 
@@ -178,7 +178,7 @@ function applyFilters() {
             div.style.padding = '3px';
             div.style.borderBottom = '1px solid #ddd';
             div.style.cursor = 'pointer';
-            div.innerHTML = `<b>${item.nama_desa}</b><br>Owner: ${item.nama_pemiliklahan}<br>Crop: ${item.jenis_tanah}`;
+            div.innerHTML = `<b>${item.barangay_name}</b><br>Owner: ${item.farmer_name}<br>Crop: ${item.crop_type}`;
             div.onclick = function() {
                 map.fitBounds(polygonLayers[item.id].getBounds());
                 polygonLayers[item.id].openPopup();

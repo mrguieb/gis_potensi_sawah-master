@@ -9,19 +9,18 @@ class Pemiliklahan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pemiliklahans';
+    protected $table = 'landowners';
 
     protected $fillable = [
-        'nama_pemiliklahan',
-        'alamat_pemiliklahan',
-        'no_hp_pemiliklahan',
-        'email_pemiliklahan',
-        'desa_id', // ✅ Make sure we can assign barangay when saving
+        'farmer_name',
+        'farmer_barangay',
+        'farmer_number',
+        'barangay_id', // ✅ Make sure we can assign barangay when saving
     ];
 
     // ✅ Each farmer belongs to one barangay
     public function desa()
     {
-        return $this->belongsTo(Desa::class, 'desa_id', 'id');
+        return $this->belongsTo(Desa::class, 'barangay_id', 'id');
     }
 }

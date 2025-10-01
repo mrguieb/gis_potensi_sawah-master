@@ -50,10 +50,10 @@
                                 @forelse($potensi as $item)
                                     <tr>
                                         <td>{{ $item->id }}</td>
-                                        <td>{{ $item->nama_desa }}</td>
-                                        <td>{{ $item->nama_pemiliklahan }}</td>
-                                        <td>{{ $item->jenis_tanah }}</td>
-                                        <td>{{ $item->luas_lahan }} m²</td>
+                                        <td>{{ $item->barangay_name }}</td>
+                                        <td>{{ $item->farmer_name }}</td>
+                                        <td>{{ $item->crop_type }}</td>
+                                        <td>{{ $item->land_area }} m²</td>
                                         <td>
                                             <button class="btn btn-primary btn-sm mb-1" wire:click="potensiId({{ $item->id }})">Edit</button>
                                             <button class="btn btn-danger btn-sm" wire:click="delete({{ $item->id }})">Delete</button>
@@ -84,27 +84,27 @@
                                             <!-- Barangay -->
                                             <div class="mt-2">
                                                 <label>Barangay</label>
-                                                <select wire:model="desa_id" class="form-control">
+                                                <select wire:model="barangay_id" class="form-control">
                                                     <option value="">Pick Barangay</option>
                                                     @foreach($desa as $d)
-                                                        <option value="{{ $d->id }}">{{ $d->nama_desa }}</option>
+                                                        <option value="{{ $d->id }}">{{ $d->barangay_name }}</option>
                                                     @endforeach
                                                 </select>
-                                                @error('desa_id') <span class="text-danger">{{ $message }}</span> @enderror
+                                                @error('barangay_id') <span class="text-danger">{{ $message }}</span> @enderror
                                             </div>
 
                                             <!-- Farmer -->
                                             <div class="mt-2" style="position: relative;">
                                                 <label>Farmer/Land Owner</label>
                                                 <input type="text" wire:model="searchFarmer" class="form-control" placeholder="Search Farmer/Land Owner...">
-                                                @error('pemiliklahan_id') <span class="text-danger">{{ $message }}</span> @enderror
+                                                @error('farmer_id') <span class="text-danger">{{ $message }}</span> @enderror
 
                                                 @if(!empty($pemiliklahan) && strlen($searchFarmer) > 0)
                                                     <ul class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 150px; overflow-y: auto;">
                                                         @foreach($pemiliklahan as $p)
                                                             <li class="list-group-item list-group-item-action" 
-                                                                wire:click="selectFarmer({{ $p->id }}, '{{ $p->nama_pemiliklahan }}')">
-                                                                {{ $p->nama_pemiliklahan }}
+                                                                wire:click="selectFarmer({{ $p->id }}, '{{ $p->farmer_name }}')">
+                                                                {{ $p->farmer_name }}
                                                             </li>
                                                         @endforeach
                                                     </ul>
@@ -115,21 +115,28 @@
                                             <!-- Crop Type -->
                                             <div class="mt-2">
                                                 <label>Crop Type</label>
-                                                <select wire:model="infotanah_id" class="form-control">
+                                                <select wire:model="crop_id" class="form-control">
                                                     <option value="">Pick Crop Type</option>
                                                     @foreach($infotanah as $i)
-                                                        <option value="{{ $i->id }}">{{ $i->jenis_tanah }}</option>
+                                                        <option value="{{ $i->id }}">{{ $i->crop_type }}</option>
                                                     @endforeach
                                                 </select>
-                                                @error('infotanah_id') <span class="text-danger">{{ $message }}</span> @enderror
+                                                @error('crop_id') <span class="text-danger">{{ $message }}</span> @enderror
                                             </div>
 
                                             <!-- Land Area -->
                                             <div class="mt-2">
                                                 <label>Land Area (m²)</label>
-                                                <input type="number" wire:model="luas_lahan" class="form-control">
-                                                @error('luas_lahan') <span class="text-danger">{{ $message }}</span> @enderror
+                                                <input 
+                                                    type="number" 
+                                                    step="0.01" 
+                                                    wire:model="land_area" 
+                                                    class="form-control @error('land_area') is-invalid @enderror">
+                                                @error('land_area') 
+                                                    <span class="text-danger">{{ $message }}</span> 
+                                                @enderror
                                             </div>
+
 
                                             <!-- Upload -->
                                             <div class="mt-2">
@@ -145,7 +152,7 @@
                                             <!-- Boundaries -->
                                             <div class="mt-2">
                                                 <label>Land Boundaries (GeoJSON)</label>
-                                                <textarea class="form-control" id="get-data" rows="5" wire:model="batas_lahan"></textarea>
+                                                <textarea class="form-control" id="get-data" rows="5" wire:model="land_boundaries"></textarea>
                                             </div>
                                         </form>
                                     </div>
@@ -194,7 +201,7 @@ document.addEventListener('livewire:load', () => {
 
     function updateTextarea() {
         const geojson = polygonLayerGroup.toGeoJSON();
-        @this.set('batas_lahan', JSON.stringify(geojson));
+        @this.set('land_boundaries', JSON.stringify(geojson));
         document.getElementById('get-data').value = JSON.stringify(geojson);
     }
 
@@ -211,9 +218,9 @@ document.addEventListener('livewire:load', () => {
         let allBounds = [];
 
         lahan.forEach(item => {
-            if (item.batas_lahan) {
+            if (item.land_boundaries) {
                 try {
-                    const geojson = JSON.parse(item.batas_lahan);
+                    const geojson = JSON.parse(item.land_boundaries);
                     const geoLayer = L.geoJSON(geojson, { style: { color: getRandomColor(), fillOpacity: 0.5 } })
                         .on('click', function () { zoomToBounds(this.getBounds()); })
                         .addTo(polygonLayerGroup);
@@ -222,8 +229,8 @@ document.addEventListener('livewire:load', () => {
                         if (layer.getBounds) {
                             allBounds.push(layer.getBounds());
                             const center = layer.getBounds().getCenter();
-                            const popup = `<b>${item.jenis_tanah || 'Crop'}</b><br>Barangay: ${item.nama_desa || '-'}<br>Owner: ${item.nama_pemiliklahan || '-'}<br>Land: ${item.luas_lahan || '-'} m²`;
-                            L.marker(center, { icon: getCropIcon(item.jenis_tanah) }).bindPopup(popup).addTo(markerLayerGroup);
+                            const popup = `<b>${item.crop_type || 'Crop'}</b><br>Barangay: ${item.barangay_name || '-'}<br>Owner: ${item.farmer_name || '-'}<br>Land: ${item.land_area || '-'} m²`;
+                            L.marker(center, { icon: getCropIcon(item.crop_type) }).bindPopup(popup).addTo(markerLayerGroup);
                             layer.bindPopup(popup);
                         }
                     });

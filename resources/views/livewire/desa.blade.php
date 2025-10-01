@@ -49,18 +49,18 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Barangay Name</th>
-                                                <th>Disctrict</th>
+                                                {{-- <th>Disctrict</th> --}}
                                                 <th>No. Of Farmers</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse ($desas as $item)
+                                            @forelse ($barangays as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->nama_desa }}</td>
-                                                <td>{{ $item->nama_kecamatan }}</td>
-                                                <td>{{ $item->luas_wilayah }}</td>
+                                                <td>{{ $item->barangay_name }}</td>
+                                                {{-- <td>{{ $item->town_name }}</td> --}}
+                                                <td>{{ $item->number_of_farmers }}</td>
                                                 <td>
                                                     <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" wire:click="desaId({{ $item->id }})">Edit</a>
                                                     <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" wire:click="desaId({{ $item->id }})">Delete</a>
@@ -94,23 +94,23 @@
                 <div class="modal-body p-4">
                     <div class="form-group mb-3">
                         <label for="">Barangay Name</label>
-                        <input type="text" class="form-control" wire:model="nama_desa">
-                        @error('nama_desa') <span class="text-danger">{{ $message }}</span> @enderror
+                        <input type="text" class="form-control" wire:model="barangay_name">
+                        @error('barangay_name') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group mb-3">
-                        <label for="">Disctrict</label>
-                        <select wire:model="kecamatan_id" class="form-control">
-                            <option value="">Select District</option>
-                            @foreach ($kecamatans as $item)
-                            <option value="{{ $item->id }}">{{ $item->nama_kecamatan }}</option>
+                        <label for="">Municipality</label>
+                        <select wire:model="town_id" class="form-control">
+                            <option value="">Select Municipality</option>
+                            @foreach ($town as $item)
+                            <option value="{{ $item->id }}">{{ $item->town_name }}</option>
                             @endforeach
                         </select>
-                        @error('kecamatan_id') <span class="text-danger">{{ $message }}</span> @enderror
+                        @error('town_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group mb-3">
                         <label for="">No. Of Farmers</label>
-                        <input type="text" class="form-control" wire:model="luas_wilayah">
-                        @error('luas_wilayah') <span class="text-danger">{{ $message }}</span> @enderror
+                        <input type="text" class="form-control" wire:model="number_of_farmers">
+                        @error('number_of_farmers') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -133,23 +133,23 @@
                 <div class="modal-body p-4">
                     <div class="form-group mb-3">
                         <label for="">Barangay Name</label>
-                        <input type="text" class="form-control" wire:model="nama_desa">
-                        @error('nama_desa') <span class="text-danger">{{ $message }}</span> @enderror
+                        <input type="text" class="form-control" wire:model="barangay_name">
+                        @error('barangay_name') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group mb-3">
-                        <label for="">District</label>
-                        <select wire:model="kecamatan_id" class="form-control">
-                            <option value="">Choose District</option>
-                            @foreach ($kecamatans as $item)
-                            <option value="{{ $item->id }}">{{ $item->nama_kecamatan }}</option>
+                        <label for="">Municipality</label>
+                        <select wire:model="town_id" class="form-control">
+                            <option value="">Choose Municipality</option>
+                            @foreach ($town as $item)
+                            <option value="{{ $item->id }}">{{ $item->town_name }}</option>
                             @endforeach
                         </select>
-                        @error('kecamatan_id') <span class="text-danger">{{ $message }}</span> @enderror
+                        @error('town_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group mb-3">
                         <label for="">No. of Farmers</label>
-                        <input type="text" class="form-control" wire:model="luas_wilayah">
-                        @error('luas_wilayah') <span class="text-danger">{{ $message }}</span> @enderror
+                        <input type="text" class="form-control" wire:model="number_of_farmers">
+                        @error('number_of_farmers') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="modal-footer">

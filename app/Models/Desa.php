@@ -9,18 +9,18 @@ class Desa extends Model
 {
     use HasFactory;
 
-    protected $table = 'desas';
-    protected $fillable = ['nama_desa', 'kecamatans_id', 'luas_wilayah'];
+    protected $table = 'barangays';
+    protected $fillable = ['barangay_name', 'town_id', 'number_of_farmers'];
 
-    // Relationship to Kecamatan (District)
+    // Relationship to Kecamatan (Municipality)
     public function kecamatan()
     {
-        return $this->belongsTo(Kecamatan::class, 'kecamatans_id', 'id');
+        return $this->belongsTo(Kecamatan::class, 'town_id', 'id');
     }
 
     // Relationship to Pemiliklahan (Farmers/Land Owners)
-    public function pemiliklahans()
+    public function landowners()
     {
-        return $this->hasMany(Pemiliklahan::class, 'desa_id', 'id');
+        return $this->hasMany(Pemiliklahan::class, 'barangay_id', 'id');
     }
 }

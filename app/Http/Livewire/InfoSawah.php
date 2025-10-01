@@ -15,38 +15,38 @@ class InfoSawah extends Component
     public $perPage = 10;
     protected $queryString = ['search' => ['except' => ''], 'perPage'];
 
-    protected $infotanahs;
+    protected $crops;
     public function mount()
     {
-        $this->infotanahs = Infotanah::paginate($this->perPage);
+        $this->crops = Infotanah::paginate($this->perPage);
     }
-    public $jenis_tanah, $ketinggian_tanah, $kelembaban_tanah, $infotanah_id;
+    public $crop_type, $ketinggian_tanah, $kelembaban_tanah, $crop_id;
 
     public function resetInput()
     {
-        $this->jenis_tanah = '';
+        $this->crop_type = '';
         $this->ketinggian_tanah = '';
         $this->kelembaban_tanah = '';
-        $this->infotanah_id = '';
+        $this->crop_id = '';
     }
     public function render()
     {
-        $this->infotanahs = Infotanah::where('jenis_tanah', 'like', '%' . $this->search . '%')->paginate($this->perPage);
+        $this->crops = Infotanah::where('crop_type', 'like', '%' . $this->search . '%')->paginate($this->perPage);
 
         return view('livewire.info-sawah',[
-            'infotanahs' => $this->infotanahs,
+            'crops' => $this->crops,
         ])->extends('layouts.app')->section('content');
     }
 
     public function store(){
         $this->validate([
-            'jenis_tanah' => 'required',
+            'crop_type' => 'required',
             'ketinggian_tanah' => 'required',
             'kelembaban_tanah' => 'required',
         ]);
 
         Infotanah::create([
-            'jenis_tanah' => $this->jenis_tanah,
+            'crop_type' => $this->crop_type,
             'ketinggian' => $this->ketinggian_tanah,
             'kelembaban' => $this->kelembaban_tanah,
         ]);
@@ -57,23 +57,23 @@ class InfoSawah extends Component
 
     public function tanahId($id){
         $tanah = Infotanah::find($id);
-        $this->infotanah_id = $id;
-        $this->jenis_tanah = $tanah->jenis_tanah;
+        $this->crop_id = $id;
+        $this->crop_type = $tanah->crop_type;
         $this->ketinggian_tanah = $tanah->ketinggian;
         $this->kelembaban_tanah = $tanah->kelembaban;
     }
 
     public function update(){
         $this->validate([
-            'jenis_tanah' => 'required',
+            'crop_type' => 'required',
             'ketinggian_tanah' => 'required',
             'kelembaban_tanah' => 'required',
         ]);
 
-        if($this->infotanah_id){
-            $tanah = Infotanah::find($this->infotanah_id);
+        if($this->crop_id){
+            $tanah = Infotanah::find($this->crop_id);
             $tanah->update([
-                'jenis_tanah' => $this->jenis_tanah,
+                'crop_type' => $this->crop_type,
                 'ketinggian' => $this->ketinggian_tanah,
                 'kelembaban' => $this->kelembaban_tanah,
             ]);
@@ -83,8 +83,8 @@ class InfoSawah extends Component
     }
 
     public function delete(){
-        if($this->infotanah_id){
-            Infotanah::find($this->infotanah_id)->delete();
+        if($this->crop_id){
+            Infotanah::find($this->crop_id)->delete();
             $this->emit('infotanahDelete');
         }
     }

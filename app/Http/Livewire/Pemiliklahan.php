@@ -13,29 +13,29 @@ class Pemiliklahan extends Component
 
     public $search;
     public $perPage = 5;
-    public $nama_pemiliklahan, $alamat_pemiliklahan, $no_hp_pemiliklahan, $email_pemiliklahan, $pemiliklahan_id;
-    protected $pemiliklahans;
+    public $farmer_name, $farmer_barangay, $farmer_number, $farmer_id;
+    protected $landowners;
 
     protected $rules = [
-        'nama_pemiliklahan'   => 'required|string|max:255',
-        'alamat_pemiliklahan' => 'required|string|max:255',
-        'no_hp_pemiliklahan'  => 'required|digits_between:10,15',
-        'email_pemiliklahan'  => 'nullable|email',
+        'farmer_name'   => 'required|string|max:255',
+        'farmer_barangay' => 'required|string|max:255',
+        'farmer_number'  => 'required|digits_between:10,15',
+        // 'farmer_email'  => 'nullable|email',
     ];
 
     protected $messages = [
-        'nama_pemiliklahan.required'   => 'Owner name is required.',
-        'nama_pemiliklahan.string'     => 'Owner name must be text.',
-        'nama_pemiliklahan.max'        => 'Owner name cannot exceed 255 characters.',
+        'farmer_name.required'   => 'Owner name is required.',
+        'farmer_name.string'     => 'Owner name must be text.',
+        'farmer_name.max'        => 'Owner name cannot exceed 255 characters.',
 
-        'alamat_pemiliklahan.required' => 'Address is required.',
-        'alamat_pemiliklahan.string'   => 'Address must be text.',
-        'alamat_pemiliklahan.max'      => 'Address cannot exceed 255 characters.',
+        'farmer_barangay.required' => 'Address is required.',
+        'farmer_barangay.string'   => 'Address must be text.',
+        'farmer_barangay.max'      => 'Address cannot exceed 255 characters.',
 
-        'no_hp_pemiliklahan.required'  => 'Phone number is required.',
-        'no_hp_pemiliklahan.digits_between' => 'Phone number must be between 10 and 15 digits.',
+        'farmer_number.required'  => 'Phone number is required.',
+        'farmer_number.digits_between' => 'Phone number must be between 10 and 15 digits.',
 
-        'email_pemiliklahan.email'     => 'Please enter a valid email address.',
+        // 'farmer_email.email'     => 'Please enter a valid email address.',
     ];
 
     public function updatingSearch()
@@ -50,35 +50,35 @@ class Pemiliklahan extends Component
 
     public function render()
     {
-        $this->pemiliklahans = ModelsPemiliklahan::where('nama_pemiliklahan', 'like', '%' . $this->search . '%')
-            ->orWhere('alamat_pemiliklahan', 'like', '%' . $this->search . '%')
-            ->orWhere('no_hp_pemiliklahan', 'like', '%' . $this->search . '%')
-            ->orWhere('email_pemiliklahan', 'like', '%' . $this->search . '%')
+        $this->landowners = ModelsPemiliklahan::where('farmer_name', 'like', '%' . $this->search . '%')
+            ->orWhere('farmer_barangay', 'like', '%' . $this->search . '%')
+            ->orWhere('farmer_number', 'like', '%' . $this->search . '%')
+            // ->orWhere('farmer_email', 'like', '%' . $this->search . '%')
             ->paginate($this->perPage);
 
         return view('livewire.pemiliklahan', [
-            'pemiliklahans' => $this->pemiliklahans,
+            'landowners' => $this->landowners,
         ])->extends('layouts.app')->section('content');
     }
 
     public function resetInputFields()
     {
-        $this->nama_pemiliklahan   = '';
-        $this->alamat_pemiliklahan = '';
-        $this->no_hp_pemiliklahan  = '';
-        $this->email_pemiliklahan  = '';
-        $this->pemiliklahan_id     = '';
+        $this->farmer_name   = '';
+        $this->farmer_barangay = '';
+        $this->farmer_number  = '';
+        // $this->farmer_email  = '';
+        $this->farmer_id     = '';
     }
 
     public function pemiliklahanId($id)
     {
-        $this->pemiliklahan_id = $id;
+        $this->farmer_id = $id;
 
         $pemiliklahan = ModelsPemiliklahan::find($id);
-        $this->nama_pemiliklahan   = $pemiliklahan->nama_pemiliklahan;
-        $this->alamat_pemiliklahan = $pemiliklahan->alamat_pemiliklahan;
-        $this->no_hp_pemiliklahan  = $pemiliklahan->no_hp_pemiliklahan;
-        $this->email_pemiliklahan  = $pemiliklahan->email_pemiliklahan;
+        $this->farmer_name   = $pemiliklahan->farmer_name;
+        $this->farmer_barangay = $pemiliklahan->farmer_barangay;
+        $this->farmer_number  = $pemiliklahan->farmer_number;
+        // $this->farmer_email  = $pemiliklahan->farmer_email;
     }
 
     public function store()
@@ -96,8 +96,8 @@ class Pemiliklahan extends Component
     {
         $validatedData = $this->validate();
 
-        if ($this->pemiliklahan_id) {
-            $pemiliklahan = ModelsPemiliklahan::find($this->pemiliklahan_id);
+        if ($this->farmer_id) {
+            $pemiliklahan = ModelsPemiliklahan::find($this->farmer_id);
             $pemiliklahan->update($validatedData);
 
             $this->resetInputFields();
@@ -108,8 +108,8 @@ class Pemiliklahan extends Component
 
     public function delete()
     {
-        if ($this->pemiliklahan_id) {
-            ModelsPemiliklahan::where('id', $this->pemiliklahan_id)->delete();
+        if ($this->farmer_id) {
+            ModelsPemiliklahan::where('id', $this->farmer_id)->delete();
             session()->flash('message', 'Land owner successfully deleted.');
         }
     }

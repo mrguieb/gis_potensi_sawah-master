@@ -135,8 +135,8 @@
                 @if($petas->isNotEmpty())
                     <div class="report-meta">
                         Year: {{ $tahun ?? 'All' }} |
-                        {{ $kecamatan ?? ($petas->first()->nama_kecamatan ?? '-') }} |
-                        Barangay: {{ $desa ?? ($petas->first()->nama_desa ?? '-') }}
+                        {{ $kecamatan ?? ($petas->first()->town_name ?? '-') }} |
+                        Barangay: {{ $desa ?? ($petas->first()->barangay_name ?? '-') }}
                     </div>
                 @endif
             </div>
@@ -156,10 +156,10 @@
                     @forelse($petas as $index => $item)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $item->nama_desa }}</td>
-                            <td>{{ $item->nama_pemiliklahan }}</td>
-                            <td>{{ $item->jenis_tanah }}</td>
-                            <td>{{ $item->luas_lahan }}</td>
+                            <td>{{ $item->barangay_name }}</td>
+                            <td>{{ $item->farmer_name }}</td>
+                            <td>{{ $item->crop_type }}</td>
+                            <td>{{ $item->land_area }}</td>
                         </tr>
                     @empty
                         <tr>

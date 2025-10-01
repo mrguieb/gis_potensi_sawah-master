@@ -14,67 +14,67 @@ class Desa extends Component
 
     public $search;
     public $perPage = 10;
-    public $nama_desa, $kecamatans_id, $luas_wilayah, $desa_id;
+    public $barangay_name, $town_id, $number_of_farmers, $barangay_id;
 
-    protected $desas, $kecamatans;
+    protected $barangays, $town;
 
     // ✅ Custom validation messages
     protected $messages = [
-        'nama_desa.required'    => 'Barangay name is required.',
-        'kecamatans_id.required' => 'Please select a district.',
-        'luas_wilayah.required'  => 'Number of farmers is required.',
-        'luas_wilayah.numeric'   => 'Number of farmers must be a number.',
+        'barangay_name.required'    => 'Barangay name is required.',
+        'town_id.required' => 'Please select a Municipality.',
+        'number_of_farmers.required'  => 'Number of farmers is required.',
+        'number_of_farmers.numeric'   => 'Number of farmers must be a number.',
     ];
 
     public function render()
     {
         // ✅ Use Eloquent relationships with eager loading
-        $this->desas = ModelsDesa::with(['kecamatan', 'pemiliklahans'])
+        $this->barangays = ModelsDesa::with(['kecamatan', 'landowners'])
             ->where(function($query) {
-                $query->where('nama_desa', 'like', '%' . $this->search . '%')
+                $query->where('barangay_name', 'like', '%' . $this->search . '%')
                       ->orWhereHas('kecamatan', function($q) {
-                          $q->where('nama_kecamatan', 'like', '%' . $this->search . '%');
+                          $q->where('town_name', 'like', '%' . $this->search . '%');
                       });
             })
             ->paginate($this->perPage);
 
-        $this->kecamatans = Kecamatan::all();
+        $this->town = Kecamatan::all();
 
         return view('livewire.desa', [
-            'desas' => $this->desas,
-            'kecamatans' => $this->kecamatans,
+            'barangays' => $this->barangays,
+            'town' => $this->town,
         ])->extends('layouts.app')->section('content');
     }
 
     public function resetFields()
     {
-        $this->nama_desa = '';
-        $this->kecamatans_id = '';
-        $this->luas_wilayah = '';
-        $this->desa_id = '';
+        $this->barangay_name = '';
+        $this->town_id = '';
+        $this->number_of_farmers = '';
+        $this->barangay_id = '';
     }
 
     public function desaId($id)
     {
         $desa = ModelsDesa::find($id);
-        $this->desa_id = $id;
-        $this->nama_desa = $desa->nama_desa;
-        $this->kecamatans_id = $desa->kecamatans_id;
-        $this->luas_wilayah = $desa->luas_wilayah;
+        $this->barangay_id = $id;
+        $this->barangay_name = $desa->barangay_name;
+        $this->town_id = $desa->town_id;
+        $this->number_of_farmers = $desa->number_of_farmers;
     }
 
     public function store()
     {
         $this->validate([
-            'nama_desa' => 'required|string|max:255',
-            'kecamatans_id' => 'required|exists:kecamatans,id',
-            'luas_wilayah' => 'required|numeric|min:1',
+            'barangay_name' => 'required|string|max:255',
+            'town_id' => 'required|exists:town,id',
+            'number_of_farmers' => 'required|numeric|min:1',
         ]);
 
         ModelsDesa::create([
-            'nama_desa' => $this->nama_desa,
-            'kecamatans_id' => $this->kecamatans_id,
-            'luas_wilayah' => $this->luas_wilayah,
+            'barangay_name' => $this->barangay_name,
+            'town_id' => $this->town_id,
+            'number_of_farmers' => $this->number_of_farmers,
         ]);
 
         session()->flash('message', 'Barangay added successfully!');
@@ -84,17 +84,17 @@ class Desa extends Component
     public function update()
     {
         $this->validate([
-            'nama_desa' => 'required|string|max:255',
-            'kecamatans_id' => 'required|exists:kecamatans,id',
-            'luas_wilayah' => 'required|numeric|min:1',
+            'barangay_name' => 'required|string|max:255',
+            'town_id' => 'required|exists:town,id',
+            'number_of_farmers' => 'required|numeric|min:1',
         ]);
 
-        if ($this->desa_id) {
-            $desa = ModelsDesa::find($this->desa_id);
+        if ($this->barangay_id) {
+            $desa = ModelsDesa::find($this->barangay_id);
             $desa->update([
-                'nama_desa' => $this->nama_desa,
-                'kecamatans_id' => $this->kecamatans_id,
-                'luas_wilayah' => $this->luas_wilayah,
+                'barangay_name' => $this->barangay_name,
+                'town_id' => $this->town_id,
+                'number_of_farmers' => $this->number_of_farmers,
             ]);
 
             session()->flash('message', 'Barangay updated successfully!');
@@ -104,8 +104,8 @@ class Desa extends Component
 
     public function destroy()
     {
-        if ($this->desa_id) {
-            $desa = ModelsDesa::find($this->desa_id);
+        if ($this->barangay_id) {
+            $desa = ModelsDesa::find($this->barangay_id);
             $desa->delete();
             session()->flash('message', 'Barangay deleted successfully!');
             $this->resetFields();

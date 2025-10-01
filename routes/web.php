@@ -19,12 +19,12 @@ Route::post('/suggest-crop', [CropRecommendationController::class, 'suggestCrop'
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/info_tanah', InfoSawah::class)->name('info_tanah');
-Route::get('/desa', LivewireDesa::class)->name('desa');
-Route::get('/pemilik_lahan', LivewirePemiliklahan::class)->name('pemilik_lahan');
-Route::get('/potensi_sawah', LivewirePotensi::class)->name('potensi_sawah');
-Route::get('/peta', Peta::class)->name('peta');
-Route::get('/laporan', Laporan::class)->name('laporan');
+Route::get('/croptype', InfoSawah::class)->name('info_tanah');
+Route::get('/barangays', LivewireDesa::class)->name('desa');
+Route::get('/landowners', LivewirePemiliklahan::class)->name('pemilik_lahan');
+Route::get('/land_area_info', LivewirePotensi::class)->name('potensi_sawah');
+Route::get('/maps', Peta::class)->name('peta');
+Route::get('/report', Laporan::class)->name('laporan');
 Route::get('/', HalamanUser::class)->name('user');
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');

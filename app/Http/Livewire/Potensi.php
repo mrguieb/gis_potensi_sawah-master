@@ -17,8 +17,8 @@ class Potensi extends Component
     public $search = '';
     public $searchFarmer = ''; // Search text for farmer
     public $perPage = 5;
-    public $desa_id, $pemiliklahan_id, $infotanah_id, $luas_lahan, $potensi_id;
-    public $batas_lahan = '';
+    public $barangay_id, $farmer_id, $crop_id, $land_area, $potensi_id;
+    public $land_boundaries = '';
     public $isTambah = false;
     public $isUpdate = false;
 
@@ -27,28 +27,28 @@ class Potensi extends Component
     protected $updatesQueryString = ['search', 'perPage'];
 
     protected $rules = [
-        'desa_id'         => 'required',
-        'pemiliklahan_id' => 'required',
-        'infotanah_id'    => 'required',
-        'luas_lahan'      => 'required|numeric|min:1',
-        'batas_lahan'     => 'required',
+        'barangay_id'         => 'required',
+        'farmer_id' => 'required',
+        'crop_id'         => 'required',
+        'land_area'       => 'required|numeric|min:0.01', // allow decimals, no 0 values
+        'land_boundaries' => 'required',
     ];
 
     protected $messages = [
-        'desa_id.required'         => 'Please select a Barangay.',
-        'pemiliklahan_id.required' => 'Please select a Farmer/Land Owner.',
-        'infotanah_id.required'    => 'Please select a crop type.',
-        'luas_lahan.required'      => 'Land area is required.',
-        'luas_lahan.numeric'       => 'Land area must be a number.',
-        'luas_lahan.min'           => 'Land area must be greater than 0.',
-        'batas_lahan.required'     => 'You must draw or upload the land boundaries.',
+        'barangay_id.required'         => 'Please select a Barangay.',
+        'farmer_id.required' => 'Please select a Farmer/Land Owner.',
+        'crop_id.required'         => 'Please select a crop type.',
+        'land_area.required'       => 'Land area is required.',
+        'land_area.numeric'        => 'Land area must be a number.',
+        'land_area.min'            => 'Land area must be greater than 0.',
+        'land_boundaries.required' => 'You must draw or upload the land boundaries.',
     ];
 
     public function updatedSearchFarmer()
     {
         // Only search if at least 1 character entered
         if (strlen($this->searchFarmer) > 0) {
-            $this->pemiliklahan = ModelsPemiliklahan::where('nama_pemiliklahan', 'like', '%' . $this->searchFarmer . '%')->get();
+            $this->pemiliklahan = ModelsPemiliklahan::where('farmer_name', 'like', '%' . $this->searchFarmer . '%')->get();
         } else {
             $this->pemiliklahan = [];
         }
@@ -56,23 +56,23 @@ class Potensi extends Component
 
     public function selectFarmer($id, $name)
     {
-        $this->pemiliklahan_id = $id;
+        $this->farmer_id = $id;
         $this->searchFarmer = $name;
         $this->pemiliklahan = []; // Clear dropdown after selection
     }
 
     public function render()
     {
-        $potensi = ModelsPotensi::join('desas', 'desas.id', '=', 'potensis.desa_id')
-            ->join('pemiliklahans', 'pemiliklahans.id', '=', 'potensis.pemiliklahan_id')
-            ->join('infotanahs', 'infotanahs.id', '=', 'potensis.infotanah_id')
-            ->select('potensis.*', 'desas.nama_desa', 'pemiliklahans.nama_pemiliklahan', 'infotanahs.jenis_tanah')
+        $potensi = ModelsPotensi::join('barangays', 'barangays.id', '=', 'farmland.barangay_id')
+            ->join('landowners', 'landowners.id', '=', 'farmland.farmer_id')
+            ->join('crops', 'crops.id', '=', 'farmland.crop_id')
+            ->select('farmland.*', 'barangays.barangay_name', 'landowners.farmer_name', 'crops.crop_type')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('desas.nama_desa', 'like', '%' . $this->search . '%')
-                        ->orWhere('pemiliklahans.nama_pemiliklahan', 'like', '%' . $this->search . '%')
-                        ->orWhere('infotanahs.jenis_tanah', 'like', '%' . $this->search . '%')
-                        ->orWhere('potensis.luas_lahan', 'like', '%' . $this->search . '%');
+                    $q->where('barangays.barangay_name', 'like', '%' . $this->search . '%')
+                      ->orWhere('landowners.farmer_name', 'like', '%' . $this->search . '%')
+                      ->orWhere('crops.crop_type', 'like', '%' . $this->search . '%')
+                      ->orWhereRaw("CAST(farmland.land_area AS CHAR) LIKE ?", ['%' . $this->search . '%']); // fix search for decimals
                 });
             })
             ->paginate($this->perPage);
@@ -87,20 +87,20 @@ class Potensi extends Component
 
     private function getLahanData()
     {
-        return ModelsPotensi::join('desas', 'desas.id', '=', 'potensis.desa_id')
-            ->join('pemiliklahans', 'pemiliklahans.id', '=', 'potensis.pemiliklahan_id')
-            ->join('infotanahs', 'infotanahs.id', '=', 'potensis.infotanah_id')
-            ->select('potensis.*', 'desas.nama_desa', 'pemiliklahans.nama_pemiliklahan', 'infotanahs.jenis_tanah')
+        return ModelsPotensi::join('barangays', 'barangays.id', '=', 'farmland.barangay_id')
+            ->join('landowners', 'landowners.id', '=', 'farmland.farmer_id')
+            ->join('crops', 'crops.id', '=', 'farmland.crop_id')
+            ->select('farmland.*', 'barangays.barangay_name', 'landowners.farmer_name', 'crops.crop_type')
             ->get();
     }
 
     public function resetInputFields()
     {
-        $this->desa_id = '';
-        $this->pemiliklahan_id = '';
-        $this->infotanah_id = '';
-        $this->luas_lahan = '';
-        $this->batas_lahan = '';
+        $this->barangay_id = '';
+        $this->farmer_id = '';
+        $this->crop_id = '';
+        $this->land_area = '';
+        $this->land_boundaries = '';
         $this->potensi_id = '';
         $this->searchFarmer = '';
         $this->pemiliklahan = [];
@@ -121,15 +121,15 @@ class Potensi extends Component
         $this->potensi_id = $id;
 
         $potensi = ModelsPotensi::find($id);
-        $this->desa_id = $potensi->desa_id;
-        $this->pemiliklahan_id = $potensi->pemiliklahan_id;
-        $this->infotanah_id = $potensi->infotanah_id;
-        $this->luas_lahan = $potensi->luas_lahan;
-        $this->batas_lahan = $potensi->batas_lahan;
+        $this->barangay_id = $potensi->barangay_id;
+        $this->farmer_id = $potensi->farmer_id;
+        $this->crop_id = $potensi->crop_id;
+        $this->land_area = $potensi->land_area;
+        $this->land_boundaries = $potensi->land_boundaries;
 
         // Pre-fill the farmer name for editing
-        $farmer = ModelsPemiliklahan::find($potensi->pemiliklahan_id);
-        $this->searchFarmer = $farmer ? $farmer->nama_pemiliklahan : '';
+        $farmer = ModelsPemiliklahan::find($potensi->farmer_id);
+        $this->searchFarmer = $farmer ? $farmer->farmer_name : '';
 
         $this->isTambah = $this->isUpdate = true;
         $this->dispatchBrowserEvent('open-potensi-modal');
@@ -140,11 +140,11 @@ class Potensi extends Component
         $this->validate();
 
         ModelsPotensi::create([
-            'desa_id'         => $this->desa_id,
-            'pemiliklahan_id' => $this->pemiliklahan_id,
-            'infotanah_id'    => $this->infotanah_id,
-            'luas_lahan'      => $this->luas_lahan,
-            'batas_lahan'     => $this->batas_lahan,
+            'barangay_id'         => $this->barangay_id,
+            'farmer_id' => $this->farmer_id,
+            'crop_id'         => $this->crop_id,
+            'land_area'       => $this->land_area,
+            'land_boundaries' => $this->land_boundaries,
         ]);
 
         $this->afterCrud('Data Successfully Added');
@@ -156,11 +156,11 @@ class Potensi extends Component
 
         if ($this->potensi_id) {
             ModelsPotensi::find($this->potensi_id)->update([
-                'desa_id'         => $this->desa_id,
-                'pemiliklahan_id' => $this->pemiliklahan_id,
-                'infotanah_id'    => $this->infotanah_id,
-                'luas_lahan'      => $this->luas_lahan,
-                'batas_lahan'     => $this->batas_lahan,
+                'barangay_id'         => $this->barangay_id,
+                'farmer_id' => $this->farmer_id,
+                'crop_id'         => $this->crop_id,
+                'land_area'       => $this->land_area,
+                'land_boundaries' => $this->land_boundaries,
             ]);
 
             $this->afterCrud('Data Successfully Updated');
