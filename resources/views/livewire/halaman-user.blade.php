@@ -96,12 +96,12 @@
                 <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
                     <div class="navbar-nav ml-auto py-0">
                         <a href="#home" class="nav-item nav-link active">Home</a>
-                        <a href="#visimisi" class="nav-item nav-link">Vision Mission</a>
-                        <a href="#struktur" class="nav-item nav-link">Organizational Structure</a>
+                        <a href="#vision_mission" class="nav-item nav-link">Vision Mission</a>
+                        <a href="#orgcharts" class="nav-item nav-link">Organizational Structure</a>
                         <a class="nav-link" href="#mapCarousel">Map Gallery</a>
-                        <a href="#desa" class="nav-item nav-link">Barangay/Village Data</a>
-                        <a href="#lahan" class="nav-item nav-link">Land Data</a>
-                        <a href="#potensi" class="nav-item nav-link">Agcricultural Map</a>
+                        <a href="#barangayss" class="nav-item nav-link">Barangay/Village Data</a>
+                        <a href="#land_Data" class="nav-item nav-link">Land Data</a>
+                        <a href="#maps" class="nav-item nav-link">Agcricultural Map</a>
                         <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                     </div>
                 </div>
@@ -169,7 +169,7 @@
     <!-- Contact Info End -->
 
     <!-- About Start -->
-    <div id="visimisi" class="container-fluid py-5">
+    <div id="vision_mission" class="container-fluid py-5">
         <div class="container pt-0 pt-lg-4">
             <div class="row align-items-center">
                 <div class="col-lg-5">
@@ -202,12 +202,12 @@
     <!-- About End -->
 
     <!-- Testimonial Start -->
-    <div id="struktur" class="container-fluid py-5">
+    <div id="orgcharts" class="container-fluid py-5">
         <div class="container">
             <h6 class="text-secondary text-uppercase text-center font-weight-medium mb-3">About </h6>
             <h1 class="display-4 text-center mb-5">Organizational Structure</h1>
 
-            {{-- img struktur --}}
+            {{-- img orgchart --}}
             <div class="row">
                 <div class="col-md-12 mb-3">
                     <img class="img-fluid" src="{{ url('/') }}/img/struktur.png" alt="">
@@ -334,7 +334,7 @@ carousel.addEventListener('touchend', e => {
     <!-- Pricing Plan End -->
 
     <!-- Services Start -->
- <div id="desa" class="container-fluid pt-5 pb-3">
+ <div id="barangayss" class="container-fluid pt-5 pb-3">
     <div class="container">
         <h6 class="text-secondary text-uppercase text-center font-weight-medium mb-3">About</h6>
         <h1 class="display-4 text-center mb-5">Barangays / Village</h1>
@@ -368,7 +368,7 @@ carousel.addEventListener('touchend', e => {
 
 
     <!-- Features Start -->
-    <div id="lahan" class="container-fluid py-5">
+    <div id="land_Data" class="container-fluid py-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-7 m-0 my-lg-5 pt-0 pt-lg-5 pr-lg-5">
@@ -497,7 +497,7 @@ carousel.addEventListener('touchend', e => {
 
 
     <!-- Pricing Plan Start -->
-   <div id="potensi" class="container-fluid pt-5 pb-3">
+   <div id="maps" class="container-fluid pt-5 pb-3">
     <div class="container">
         <h6 class="text-secondary text-uppercase text-center font-weight-medium mb-3">About</h6>
         <h1 class="display-4 text-center mb-5">Agricultural Land Map</h1>
