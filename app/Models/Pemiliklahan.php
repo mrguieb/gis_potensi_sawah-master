@@ -13,14 +13,12 @@ class Pemiliklahan extends Model
 
     protected $fillable = [
         'farmer_name',
-        'farmer_barangay',
         'farmer_number',
-        'barangay_id', // ✅ Make sure we can assign barangay when saving
+        'barangay_id',
     ];
 
-    // ✅ Each farmer belongs to one barangay
-    public function desa()
+    public function barangay()
     {
-        return $this->belongsTo(Desa::class, 'barangay_id', 'id');
+        return $this->belongsTo(\App\Models\Barangay::class, 'barangay_id', 'id');
     }
 }

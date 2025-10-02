@@ -334,35 +334,81 @@ carousel.addEventListener('touchend', e => {
     <!-- Pricing Plan End -->
 
     <!-- Services Start -->
- <div id="barangayss" class="container-fluid pt-5 pb-3">
+<div id="barangayss" class="container-fluid pt-5 pb-3">
     <div class="container">
         <h6 class="text-secondary text-uppercase text-center font-weight-medium mb-3">About</h6>
         <h1 class="display-4 text-center mb-5">Barangays / Village</h1>
-        
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover text-center align-middle">
-                <thead class="thead-dark">
-                    <tr>
-                        {{-- <th>#</th> --}}
-                        <th>Barangay / Village Name</th>
-                        <th>No. Of Farmers</th>
-                        {{-- <th>Municipality</th> --}}
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($barangays as $index => $desa)
-                    <tr>
-                        {{-- <td>{{ $index + 1 }}</td> --}}
-                        <td class="text-uppercase">{{ $desa->barangay_name }}</td>
-                        <td>{{ $desa->number_of_farmers ?? 'N/A' }}</td>
-                        {{-- <td>{{ $desa->town_name ?? 'N/A' }}</td> --}}
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+
+        <div class="chart-container" style="position: relative; width: 100%; height: 600px; max-width: 900px; margin: auto;">
+            <canvas id="farmersMultiPieChart"></canvas>
         </div>
     </div>
 </div>
+
+@php
+    $labels = $barangays->pluck('barangay_name');
+    $data = $barangays->map(fn($item) => \App\Models\Pemiliklahan::where('barangay_id', $item->id)->count());
+
+    $colors = [];
+    foreach($barangays as $index => $item) {
+        $hue = ($index * 360 / count($barangays));
+        $colors[] = "hsl($hue, 90%, 50%)"; // bright colors
+    }
+@endphp
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = {!! json_encode($labels) !!};
+    const data = {!! json_encode($data) !!};
+    const colors = {!! json_encode($colors) !!};
+
+    const ctx = document.getElementById('farmersMultiPieChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'doughnut', // still using multi-series pie style
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Farmers',
+                data: data,
+                backgroundColor: colors,
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // allows resizing
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.raw + ' farmers';
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Farmers per Barangay',
+                    font: {
+                        size: 24,
+                        weight: 'bold'
+                    }
+                }
+            },
+            cutout: '30%'
+        }
+    });
+</script>
+
 
     <!-- Services End -->
 
@@ -379,7 +425,7 @@ carousel.addEventListener('touchend', e => {
                         <h5 class="font-weight-bold">Total Land Owners:</h5>
                         <div class="col-sm-6 mb-4 d-flex">
                             <h1 class="text-secondary" data-toggle="counter-up">{{ $pemiliktanah->count() }}  </h1>
-                            <span class="text-center font-weight-bold align-items-center text-secondary" style="display:flex">    Farmers</span>
+                            <span class="text-center font-weight-bold align-items-center text-secondary" style="display:flex">Farmers</span>
                         </div>
                         <h5 class="font-weight-bold">Total Land Area:</h5>
                         <div class="col-sm-6 mb-4 d-flex">

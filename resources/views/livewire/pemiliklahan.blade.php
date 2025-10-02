@@ -51,9 +51,8 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Name</th>
-                                                <th>Address</th>
+                                                <th>Barangay</th>
                                                 <th>Contact Number</th>
-                                                {{-- <th>Email</th> --}}
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -62,9 +61,8 @@
                                             <tr>
                                                 <td>{{ $loop->iteration + ($landowners->currentPage() - 1) * $landowners->perPage() }}</td>
                                                 <td>{{ $item->farmer_name }}</td>
-                                                <td>{{ $item->farmer_barangay }}</td>
+                                                <td>{{ $item->barangay->barangay_name ?? 'N/A' }}</td>
                                                 <td>{{ $item->farmer_number }}</td>
-                                                {{-- <td>{{ $item->farmer_email }}</td> --}}
                                                 <td>
                                                     <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" wire:click="pemiliklahanId({{ $item->id }})">Edit</a>
                                                     <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" wire:click="pemiliklahanId({{ $item->id }})">Delete</a>
@@ -72,7 +70,7 @@
                                             </tr>
                                             @empty
                                             <tr>
-                                                <td colspan="6" class="text-center">No Data Found</td>
+                                                <td colspan="5" class="text-center">No Data Found</td>
                                             </tr>
                                             @endforelse
                                         </tbody>
@@ -107,21 +105,24 @@
                             <input type="text" class="form-control" wire:model="farmer_name">
                             @error('farmer_name') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
+
                         <div class="form-group mb-3">
-                            <label>Address</label>
-                            <input type="text" class="form-control" wire:model="farmer_barangay">
-                            @error('farmer_barangay') <span class="text-danger">{{ $message }}</span> @enderror
+                            <label>Barangay</label>
+                            <select class="form-control" wire:model="barangay_id">
+                                <option value="">-- Select Barangay --</option>
+                                @foreach($barangays as $barangay)
+                                    <option value="{{ $barangay->id }}">{{ $barangay->barangay_name }}</option>
+                                @endforeach
+                            </select>
+                            @error('barangay_id') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
+
                         <div class="form-group mb-3">
                             <label>Contact Number</label>
                             <input type="text" class="form-control" wire:model="farmer_number">
                             @error('farmer_number') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
-                        {{-- <div class="form-group mb-3">
-                            <label>Email</label>
-                            <input type="text" class="form-control" wire:model="farmer_email">
-                            @error('farmer_email') <span class="text-danger">{{ $message }}</span> @enderror
-                        </div> --}}
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save</button>
@@ -147,21 +148,24 @@
                             <input type="text" class="form-control" wire:model="farmer_name">
                             @error('farmer_name') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
+
                         <div class="form-group mb-3">
-                            <label>Address</label>
-                            <input type="text" class="form-control" wire:model="farmer_barangay">
-                            @error('farmer_barangay') <span class="text-danger">{{ $message }}</span> @enderror
+                            <label>Barangay</label>
+                            <select class="form-control" wire:model="barangay_id">
+                                <option value="">-- Select Barangay --</option>
+                                @foreach($barangays as $barangay)
+                                    <option value="{{ $barangay->id }}">{{ $barangay->barangay_name }}</option>
+                                @endforeach
+                            </select>
+                            @error('barangay_id') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
+
                         <div class="form-group mb-3">
                             <label>Contact Number</label>
                             <input type="text" class="form-control" wire:model="farmer_number">
                             @error('farmer_number') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
-                        <div class="form-group mb-3">
-                            <label>Email</label>
-                            <input type="text" class="form-control" wire:model="farmer_email">
-                            @error('farmer_email') <span class="text-danger">{{ $message }}</span> @enderror
-                        </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Update</button>
@@ -177,7 +181,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Remove Farmer/landowners</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Remove Farmer/Landowner</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">

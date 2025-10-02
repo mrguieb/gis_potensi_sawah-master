@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Pemiliklahan as ModelsPemiliklahan;
+use App\Models\Barangay;
 
 class Pemiliklahan extends Component
 {
@@ -13,14 +14,14 @@ class Pemiliklahan extends Component
 
     public $search;
     public $perPage = 5;
-    public $farmer_name, $farmer_barangay, $farmer_number, $farmer_id;
+    public $farmer_name, $barangay_id, $farmer_number, $farmer_id;
+    public $barangays = [];
     protected $landowners;
 
     protected $rules = [
         'farmer_name'   => 'required|string|max:255',
-        'farmer_barangay' => 'required|string|max:255',
-        'farmer_number'  => 'required|digits_between:10,15',
-        // 'farmer_email'  => 'nullable|email',
+        'barangay_id'   => 'required|exists:barangays,id',
+        'farmer_number' => 'required|digits_between:10,15',
     ];
 
     protected $messages = [
@@ -28,15 +29,17 @@ class Pemiliklahan extends Component
         'farmer_name.string'     => 'Owner name must be text.',
         'farmer_name.max'        => 'Owner name cannot exceed 255 characters.',
 
-        'farmer_barangay.required' => 'Address is required.',
-        'farmer_barangay.string'   => 'Address must be text.',
-        'farmer_barangay.max'      => 'Address cannot exceed 255 characters.',
+        'barangay_id.required'   => 'Please select a barangay.',
+        'barangay_id.exists'     => 'Invalid barangay selected.',
 
-        'farmer_number.required'  => 'Phone number is required.',
+        'farmer_number.required' => 'Phone number is required.',
         'farmer_number.digits_between' => 'Phone number must be between 10 and 15 digits.',
-
-        // 'farmer_email.email'     => 'Please enter a valid email address.',
     ];
+
+    public function mount()
+    {
+        $this->barangays = Barangay::all();
+    }
 
     public function updatingSearch()
     {
@@ -50,23 +53,25 @@ class Pemiliklahan extends Component
 
     public function render()
     {
-        $this->landowners = ModelsPemiliklahan::where('farmer_name', 'like', '%' . $this->search . '%')
-            ->orWhere('farmer_barangay', 'like', '%' . $this->search . '%')
+        $this->landowners = ModelsPemiliklahan::with('barangay')
+            ->where('farmer_name', 'like', '%' . $this->search . '%')
+            ->orWhereHas('barangay', function ($q) {
+                $q->where('barangay_name', 'like', '%' . $this->search . '%');
+            })
             ->orWhere('farmer_number', 'like', '%' . $this->search . '%')
-            // ->orWhere('farmer_email', 'like', '%' . $this->search . '%')
             ->paginate($this->perPage);
 
         return view('livewire.pemiliklahan', [
             'landowners' => $this->landowners,
+            'barangays'  => $this->barangays,
         ])->extends('layouts.app')->section('content');
     }
 
     public function resetInputFields()
     {
         $this->farmer_name   = '';
-        $this->farmer_barangay = '';
-        $this->farmer_number  = '';
-        // $this->farmer_email  = '';
+        $this->barangay_id   = '';
+        $this->farmer_number = '';
         $this->farmer_id     = '';
     }
 
@@ -76,15 +81,13 @@ class Pemiliklahan extends Component
 
         $pemiliklahan = ModelsPemiliklahan::find($id);
         $this->farmer_name   = $pemiliklahan->farmer_name;
-        $this->farmer_barangay = $pemiliklahan->farmer_barangay;
-        $this->farmer_number  = $pemiliklahan->farmer_number;
-        // $this->farmer_email  = $pemiliklahan->farmer_email;
+        $this->barangay_id   = $pemiliklahan->barangay_id;
+        $this->farmer_number = $pemiliklahan->farmer_number;
     }
 
     public function store()
     {
         $validatedData = $this->validate();
-
         ModelsPemiliklahan::create($validatedData);
 
         session()->flash('message', 'Land owner successfully added.');
