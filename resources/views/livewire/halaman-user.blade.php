@@ -124,7 +124,7 @@
                 <img class="w-100" style="height: 700px; object-fit: cover;" src="https://www.manilatimes.net/manilatimes/uploads/images/2024/04/10/328013.jpg" alt="Image">
                     <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                         <div class="p-3" style="max-width: 900px;">
-                            <h4 class="text-white text-uppercase mb-md-3">Welcome to the website</h4>
+                            {{-- <h4 class="text-white text-uppercase mb-md-3">Welcome</h4> --}}
                             <h2 class="display-4 text-white mb-md-4 text-bold text-uppercase ">AGRI BANGAR <br> OFFICE FOR AGRICULTURAL SERVICES</h2>
                             <a href="#" class="btn btn-primary py-md-3 px-md-5 mt-2">Learn More</a>
                         </div>
