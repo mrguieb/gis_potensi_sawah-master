@@ -80,34 +80,39 @@
     <!-- Topbar End -->
 
     <!-- Navbar Start -->
-    <div class="container-fluid position-relative nav-bar p-0">
-        <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0 pl-3 pl-lg-5">
-                <a href="" class="navbar-brand">
-                    <h1 class="m-0 text-secondary">
-                        <span class="text-primary">
-                            <img src="https://lgubangar.gov.ph/wp-content/uploads/2021/10/cropped-tablogo.png" alt="Logo" style="height: 90px;">
-                        </span>
-                    </h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
-                    <div class="navbar-nav ml-auto py-0">
-                        <a href="#home" class="nav-item nav-link active">Home</a>
-                        <a href="#vision_mission" class="nav-item nav-link">Vision Mission</a>
-                        <a href="#orgcharts" class="nav-item nav-link">Organizational Structure</a>
-                        <a class="nav-link" href="#mapCarousel">Map Gallery</a>
-                        <a href="#barangayss" class="nav-item nav-link">Barangay/Village Data</a>
-                        <a href="#land_Data" class="nav-item nav-link">Land Data</a>
-                        <a href="#maps" class="nav-item nav-link">Agcricultural Map</a>
-                        <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                    </div>
+<div class="container-fluid position-relative nav-bar p-0">
+    <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
+        <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0 pl-3 pl-lg-5">
+            <!-- Logo + Bold Title for Small Screens -->
+            <a href="" class="navbar-brand d-flex align-items-center">
+                <img src="https://lgubangar.gov.ph/wp-content/uploads/2021/10/cropped-tablogo.png" alt="Logo" style="height: 90px;">
+                <!-- Page title: show on small screens only -->
+                <span class="d-lg-none ms-2 fw-bold text-primary fs-5" style="white-space: nowrap;">Bangar GIS Dashboard</span>
+            </a>
+
+            <!-- Burger Menu -->
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar links -->
+            <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
+                <div class="navbar-nav ml-auto py-0">
+                    <a href="#home" class="nav-item nav-link active">Home</a>
+                    <a href="#vision_mission" class="nav-item nav-link">Vision Mission</a>
+                    <a href="#orgcharts" class="nav-item nav-link">Organizational Structure</a>
+                    <a class="nav-link" href="#mapCarousel">Map Gallery</a>
+                    <a href="#barangayss" class="nav-item nav-link">Barangay/Village Data</a>
+                    <a href="#land_Data" class="nav-item nav-link">Land Data</a>
+                    <a href="#maps" class="nav-item nav-link">Agricultural Map</a>
+                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                 </div>
-            </nav>
-        </div>
+            </div>
+        </nav>
     </div>
+</div>
+
+
     <!-- Navbar End -->
 
 
@@ -451,7 +456,7 @@ carousel.addEventListener('touchend', e => {
     <!-- Manual Input Form -->
     <div class="col-lg-6 mb-4">
       <div class="bg-light p-4 rounded shadow-sm">
-        <h4 class="mb-3">Manual Input</h4>
+        <h4 class="mb-3">Input Data</h4>
         <form id="cropForm">
           <div class="form-row">
             <div class="form-group col-6"><label>Nitrogen (N)</label><input step="any" class="form-control" name="nitrogen" required></div>
