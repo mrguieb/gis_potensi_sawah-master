@@ -18,7 +18,7 @@ class Peta extends Component
         $this->petas = ModelsPotensi::join('barangays', 'barangays.id', '=', 'farmland.barangay_id')
             ->join('landowners', 'landowners.id', '=', 'farmland.farmer_id')
             ->join('crops', 'crops.id', '=', 'farmland.crop_id')
-            ->select('farmland.*', 'barangays.barangay_name', 'landowners.farmer_name', 'crops.crop_type', 'crops.ketinggian', 'crops.kelembaban')
+            ->select('farmland.*', 'barangays.barangay_name', 'landowners.farmer_name', 'crops.crop_type')
             ->whereNotNull('farmland.land_boundaries') // Only records with boundary data
             ->where('farmland.land_boundaries', '!=', '') // Exclude empty boundary data
             ->get();

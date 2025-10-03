@@ -6,29 +6,20 @@
                     <div class="card-header">{{ __('Crop Information') }}</div>
 
                     <div class="card-body">
-                        {{-- add button --}}
-                        <div class="row">
+                        {{-- Add button --}}
+                        <div class="row mb-3">
                             <div class="col-md-12">
                                 <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Add Crop</a>
                             </div>
                         </div>
-                        <br>
 
-                        {{-- per page & search --}}
+                        {{-- Per page & search --}}
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <select wire:model="perPage" class="form-control">
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="15">15</option>
-                                    <option value="20">20</option>
-                                    <option value="25">25</option>
-                                    <option value="30">30</option>
-                                    <option value="35">35</option>
-                                    <option value="40">40</option>
-                                    <option value="45">45</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
+                                    @foreach([5,10,15,20,25,30,35,40,45,50,100] as $num)
+                                        <option value="{{ $num }}">{{ $num }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -36,35 +27,32 @@
                             </div>
                         </div>
 
-                        {{-- table --}}
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Crop Type</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($crops as $item)
-                                            <tr>
-                                                <td>{{ $item->crop_type }}</td>
-                                                <td>
-                                                    <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" wire:click="tanahId({{ $item->id }})">Edit</a>
-                                                    <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" wire:click="tanahId({{ $item->id }})">Delete</a>
-                                                </td>
-                                            </tr>
-                                            @empty
-                                            <tr>
-                                                <td colspan="2" class="text-center">No crops available.</td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                        {{-- Table --}}
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Crop Type</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($crops as $item)
+                                    <tr>
+                                        <td>{{ $item->crop_type }}</td>
+                                        <td>
+                                            <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal" wire:click="tanahId({{ $item->id }})">Edit</a>
+                                            <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" wire:click="tanahId({{ $item->id }})">Delete</a>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="2" class="text-center">No crops available.</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            {{ $crops->links() }}
                         </div>
                     </div>
                 </div>
@@ -72,29 +60,24 @@
         </div>
     </div>
 
-    {{-- Add Crop Modal --}}
-    <div wire:ignore.self class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    {{-- Add Modal --}}
+    <div wire:ignore.self class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add Crop</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-left">
+                <div class="modal-body">
                     <form wire:submit.prevent="store">
-                        <div class="form-group">
-                            <label for="crop_type">{{ __('Crop Type') }}</label>
-                            <select id="crop_type" class="form-control @error('crop_type') is-invalid @enderror" wire:model="crop_type" required>
-                                <option value="">-- Select Crop --</option>
-                                <option value="Palay/Rice">Palay/Rice</option>
-                                <option value="Calamansi">Calamansi</option>
-                                <option value="Corn">Corn</option>
-                            </select>
+                        <div class="mb-3">
+                            <label>Crop Type</label>
+                            <input type="text" class="form-control @error('crop_type') is-invalid @enderror" wire:model="crop_type" placeholder="Enter crop type">
                             @error('crop_type')<span class="invalid-feedback">{{ $message }}</span>@enderror
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @if($crop_type=='') disabled @endif>Add</button>
+                            <button type="submit" class="btn btn-primary" @if($crop_type=='') disabled @endif>Add</button>
                         </div>
                     </form>
                 </div>
@@ -102,29 +85,24 @@
         </div>
     </div>
 
-    {{-- Edit Crop Modal --}}
-    <div wire:ignore.self class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    {{-- Edit Modal --}}
+    <div wire:ignore.self class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Crop</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-left">
+                <div class="modal-body">
                     <form wire:submit.prevent="update">
-                        <div class="form-group">
-                            <label for="crop_type">{{ __('Crop Type') }}</label>
-                            <select id="crop_type" class="form-control @error('crop_type') is-invalid @enderror" wire:model="crop_type" required>
-                                <option value="">-- Select Crop --</option>
-                                <option value="Palay/Rice">Palay/Rice</option>
-                                <option value="Calamansi">Calamansi</option>
-                                <option value="Corn">Corn</option>
-                            </select>
+                        <div class="mb-3">
+                            <label>Crop Type</label>
+                            <input type="text" class="form-control @error('crop_type') is-invalid @enderror" wire:model="crop_type" placeholder="Enter crop type">
                             @error('crop_type')<span class="invalid-feedback">{{ $message }}</span>@enderror
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @if($crop_type=='') disabled @endif>Update</button>
+                            <button type="submit" class="btn btn-primary" @if($crop_type=='') disabled @endif>Update</button>
                         </div>
                     </form>
                 </div>
@@ -132,22 +110,36 @@
         </div>
     </div>
 
-    {{-- Delete Crop Modal --}}
-    <div wire:ignore.self class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    {{-- Delete Modal --}}
+    <div wire:ignore.self class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Delete Crop</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal"><span>&times;</span></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to delete this crop?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" wire:click="delete">Delete</button>
+                    <button type="button" class="btn btn-danger" wire:click="delete">Delete</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{{-- Close modals with Livewire --}}
+<script>
+    window.addEventListener('close-modal', event => {
+        var addModal = bootstrap.Modal.getInstance(document.getElementById('addModal'));
+        if(addModal) addModal.hide();
+
+        var editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+        if(editModal) editModal.hide();
+
+        var deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+        if(deleteModal) deleteModal.hide();
+    });
+</script>

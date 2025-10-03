@@ -28,10 +28,8 @@ class Pemiliklahan extends Component
         'farmer_name.required'   => 'Owner name is required.',
         'farmer_name.string'     => 'Owner name must be text.',
         'farmer_name.max'        => 'Owner name cannot exceed 255 characters.',
-
         'barangay_id.required'   => 'Please select a barangay.',
         'barangay_id.exists'     => 'Invalid barangay selected.',
-
         'farmer_number.required' => 'Phone number is required.',
         'farmer_number.digits_between' => 'Phone number must be between 10 and 15 digits.',
     ];
@@ -78,7 +76,6 @@ class Pemiliklahan extends Component
     public function pemiliklahanId($id)
     {
         $this->farmer_id = $id;
-
         $pemiliklahan = ModelsPemiliklahan::find($id);
         $this->farmer_name   = $pemiliklahan->farmer_name;
         $this->barangay_id   = $pemiliklahan->barangay_id;
@@ -92,7 +89,7 @@ class Pemiliklahan extends Component
 
         session()->flash('message', 'Land owner successfully added.');
         $this->resetInputFields();
-        $this->emit('pemiliklahanStore');
+        $this->dispatchBrowserEvent('close-modal'); // close add modal
     }
 
     public function update()
@@ -103,9 +100,9 @@ class Pemiliklahan extends Component
             $pemiliklahan = ModelsPemiliklahan::find($this->farmer_id);
             $pemiliklahan->update($validatedData);
 
-            $this->resetInputFields();
-            $this->emit('pemiliklahanUpdate');
             session()->flash('message', 'Land owner successfully updated.');
+            $this->resetInputFields();
+            $this->dispatchBrowserEvent('close-modal'); // close edit modal
         }
     }
 
@@ -114,6 +111,8 @@ class Pemiliklahan extends Component
         if ($this->farmer_id) {
             ModelsPemiliklahan::where('id', $this->farmer_id)->delete();
             session()->flash('message', 'Land owner successfully deleted.');
+            $this->resetInputFields();
+            $this->dispatchBrowserEvent('close-modal'); // close delete modal
         }
     }
 }
