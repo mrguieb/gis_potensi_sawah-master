@@ -1,7 +1,9 @@
 import _ from 'lodash';
 window._ = _;
 
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
+// Expose Bootstrap to global scope for inline scripts (modals, tooltips)
+window.bootstrap = bootstrap;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

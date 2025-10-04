@@ -8,12 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Potensi extends Model
 {
     use HasFactory;
-    protected $table = 'potensis';
+
+    protected $table = 'farmland';
+
     protected $fillable = [
-        'desa_id',
-        'pemiliklahan_id',
-        'infotanah_id',
-        'luas_lahan',
-        'batas_lahan',
+        'barangay_id',
+        'farmer_id',
+        'crop_id',
+        'land_area',
+        'land_boundaries',
+    ];
+
+    protected $casts = [
+        'land_area' => 'float', // ensures decimals always return as float
     ];
 }

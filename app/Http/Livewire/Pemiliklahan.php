@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Pemiliklahan as ModelsPemiliklahan;
+use App\Models\Barangay;
 
 class Pemiliklahan extends Component
 {
@@ -13,89 +14,105 @@ class Pemiliklahan extends Component
 
     public $search;
     public $perPage = 5;
+    public $farmer_name, $barangay_id, $farmer_number, $farmer_id;
+    public $barangays = [];
+    protected $landowners;
 
-    public $nama_pemiliklahan, $alamat_pemiliklahan, $no_hp_pemiliklahan, $email_pemiliklahan, $pemiliklahan_id;
-    protected $pemiliklahans;
+    protected $rules = [
+        'farmer_name'   => 'required|string|max:255',
+        'barangay_id'   => 'required|exists:barangays,id',
+        'farmer_number' => 'required|digits_between:10,15',
+    ];
+
+    protected $messages = [
+        'farmer_name.required'   => 'Owner name is required.',
+        'farmer_name.string'     => 'Owner name must be text.',
+        'farmer_name.max'        => 'Owner name cannot exceed 255 characters.',
+        'barangay_id.required'   => 'Please select a barangay.',
+        'barangay_id.exists'     => 'Invalid barangay selected.',
+        'farmer_number.required' => 'Phone number is required.',
+        'farmer_number.digits_between' => 'Phone number must be between 10 and 15 digits.',
+    ];
+
+    public function mount()
+    {
+        $this->barangays = Barangay::all();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
-        $this->pemiliklahans = ModelsPemiliklahan::where('nama_pemiliklahan', 'like', '%' . $this->search . '%')
-            ->orWhere('alamat_pemiliklahan', 'like', '%' . $this->search . '%')
-            ->orWhere('no_hp_pemiliklahan', 'like', '%' . $this->search . '%')
-            ->orWhere('email_pemiliklahan', 'like', '%' . $this->search . '%')
+        $this->landowners = ModelsPemiliklahan::with('barangay')
+            ->where('farmer_name', 'like', '%' . $this->search . '%')
+            ->orWhereHas('barangay', function ($q) {
+                $q->where('barangay_name', 'like', '%' . $this->search . '%');
+            })
+            ->orWhere('farmer_number', 'like', '%' . $this->search . '%')
             ->paginate($this->perPage);
 
         return view('livewire.pemiliklahan', [
-            'pemiliklahans' => $this->pemiliklahans,
+            'landowners' => $this->landowners,
+            'barangays'  => $this->barangays,
         ])->extends('layouts.app')->section('content');
     }
 
     public function resetInputFields()
     {
-        $this->nama_pemiliklahan = '';
-        $this->alamat_pemiliklahan = '';
-        $this->no_hp_pemiliklahan = '';
-        $this->email_pemiliklahan = '';
-        $this->pemiliklahan_id = '';
+        $this->farmer_name   = '';
+        $this->barangay_id   = '';
+        $this->farmer_number = '';
+        $this->farmer_id     = '';
     }
 
-    public function pemiliklahanId($id){
-        $this->pemiliklahan_id = $id;
-
+    public function pemiliklahanId($id)
+    {
+        $this->farmer_id = $id;
         $pemiliklahan = ModelsPemiliklahan::find($id);
-        $this->nama_pemiliklahan = $pemiliklahan->nama_pemiliklahan;
-        $this->alamat_pemiliklahan = $pemiliklahan->alamat_pemiliklahan;
-        $this->no_hp_pemiliklahan = $pemiliklahan->no_hp_pemiliklahan;
-        $this->email_pemiliklahan = $pemiliklahan->email_pemiliklahan;
-
+        $this->farmer_name   = $pemiliklahan->farmer_name;
+        $this->barangay_id   = $pemiliklahan->barangay_id;
+        $this->farmer_number = $pemiliklahan->farmer_number;
     }
 
     public function store()
     {
-        $validatedDate = $this->validate([
-            'nama_pemiliklahan' => 'required',
-            'alamat_pemiliklahan' => 'required',
-            'no_hp_pemiliklahan' => 'required',
-            'email_pemiliklahan' => 'required',
-        ]);
+        $validatedData = $this->validate();
+        ModelsPemiliklahan::create($validatedData);
 
-        ModelsPemiliklahan::create($validatedDate);
-
-        session()->flash('message', 'Data Pemilik Lahan Berhasil Ditambahkan.');
-
+        session()->flash('message', 'Land owner successfully added.');
         $this->resetInputFields();
-
-        $this->emit('pemiliklahanStore'); // Close model to using to jquery
+        $this->dispatchBrowserEvent('close-modal'); // close add modal
     }
 
     public function update()
     {
-        $validatedDate = $this->validate([
-            'nama_pemiliklahan' => 'required',
-            'alamat_pemiliklahan' => 'required',
-            'no_hp_pemiliklahan' => 'required',
-            'email_pemiliklahan' => 'required',
-        ]);
+        $validatedData = $this->validate();
 
-        if ($this->pemiliklahan_id) {
-            $pemiliklahan = ModelsPemiliklahan::find($this->pemiliklahan_id);
-            $pemiliklahan->update([
-                'nama_pemiliklahan' => $this->nama_pemiliklahan,
-                'alamat_pemiliklahan' => $this->alamat_pemiliklahan,
-                'no_hp_pemiliklahan' => $this->no_hp_pemiliklahan,
-                'email_pemiliklahan' => $this->email_pemiliklahan,
-            ]);
+        if ($this->farmer_id) {
+            $pemiliklahan = ModelsPemiliklahan::find($this->farmer_id);
+            $pemiliklahan->update($validatedData);
+
+            session()->flash('message', 'Land owner successfully updated.');
             $this->resetInputFields();
-            $this->emit('pemiliklahanUpdate'); // Close model to using to jquery
-            session()->flash('message', 'Farmer/Land owner data has been successfully updated.');
+            $this->dispatchBrowserEvent('close-modal'); // close edit modal
         }
     }
 
     public function delete()
     {
-        if ($this->pemiliklahan_id) {
-            ModelsPemiliklahan::where('id', $this->pemiliklahan_id)->delete();
-            session()->flash('message', 'Farmer/Land owner data has been successfully Deleted.');
+        if ($this->farmer_id) {
+            ModelsPemiliklahan::where('id', $this->farmer_id)->delete();
+            session()->flash('message', 'Land owner successfully deleted.');
+            $this->resetInputFields();
+            $this->dispatchBrowserEvent('close-modal'); // close delete modal
         }
     }
 }

@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('desas', function (Blueprint $table) {
-            $table->integer('kecamatans_id')->unsigned()->nullable();
+        Schema::table('barangays', function (Blueprint $table) {
+            $table->integer('town_id')->unsigned()->nullable();
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('desas', function (Blueprint $table) {
+        Schema::table('barangays', function (Blueprint $table) {
             //
         });
     }

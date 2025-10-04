@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('potensis', function (Blueprint $table) {
+        Schema::create('farmland', function (Blueprint $table) {
             $table->id();
-            $table->integer('desa_id');
-            $table->integer('pemiliklahan_id');
-            $table->integer('infotanah_id');
-            $table->integer('luas_lahan');
-            $table->text('batas_lahan');
+            $table->integer('barangay_id');
+            $table->integer('farmer_id');
+            $table->integer('crop_id');
+            $table->integer('land_area');
+            $table->text('land_boundaries');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('potensis');
+        Schema::dropIfExists('farmland');
     }
 };

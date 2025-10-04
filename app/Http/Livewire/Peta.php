@@ -7,18 +7,20 @@ use Livewire\Component;
 
 class Peta extends Component
 {
-    public $desa_id, $pemiliklahan_id, $infotanah_id, $luas_lahan, $potensi_id;
-    public $nama_desa, $nama_pemiliklahan, $jenis_tanah, $tahun;
+    public $barangay_id, $farmer_id, $crop_id, $land_area, $potensi_id;
+    public $barangay_name, $farmer_name, $crop_type, $tahun;
 
     protected $petas;
-    public $batas_lahan = [];
+    public $land_boundaries = [];
 
     public function render()
     {
-        $this->petas = ModelsPotensi::join('desas', 'desas.id', '=', 'potensis.desa_id')
-            ->join('pemiliklahans', 'pemiliklahans.id', '=', 'potensis.pemiliklahan_id')
-            ->join('infotanahs', 'infotanahs.id', '=', 'potensis.infotanah_id')
-            ->select('potensis.*', 'desas.nama_desa', 'pemiliklahans.nama_pemiliklahan', 'infotanahs.jenis_tanah', 'infotanahs.ketinggian', 'infotanahs.kelembaban')
+        $this->petas = ModelsPotensi::join('barangays', 'barangays.id', '=', 'farmland.barangay_id')
+            ->join('landowners', 'landowners.id', '=', 'farmland.farmer_id')
+            ->join('crops', 'crops.id', '=', 'farmland.crop_id')
+            ->select('farmland.*', 'barangays.barangay_name', 'landowners.farmer_name', 'crops.crop_type')
+            ->whereNotNull('farmland.land_boundaries') // Only records with boundary data
+            ->where('farmland.land_boundaries', '!=', '') // Exclude empty boundary data
             ->get();
         return view('livewire.peta', [
             'petas' => $this->petas,

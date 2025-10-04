@@ -4,69 +4,80 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card shadow shadow-md">
-                <div class="card-header bg-success text-white text-center ">
-                    <img class="img-fluid" src="{{ asset('img/logo1.png') }}" alt="logo" width="200" height="150">
-                    {{-- sig potensi sawa koltim --}}
-                    <h3 class=" mt-2">Geographical Information System</h3>
-                    <h1>AGRI BANGAR OFFICE FOR AGRICULTURAL SERVICE</h1>
-
+            
+            <!-- Header Card -->
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <img src="{{ asset('img/logo1.png') }}" 
+                         alt="Logo" 
+                         class="img-fluid mb-3" 
+                         style="max-width: 200px; height: auto;">
+                    
+                    <h3 class="fw-bold mb-1">Geographical Information System</h3>
+                    <h1 class="h4 fw-semibold">AGRI BANGAR OFFICE FOR AGRICULTURAL SERVICE</h1>
                 </div>
 
+                <!-- Body -->
                 <div class="card-body">
-                    <div class="row">
-                    </div>
-                    {{-- info tanah --}}
-                    <div class="row">
-                        <div class="col-md-3 mt-1">
-                            <div class="card">
+                    <div class="row g-3">
+
+                        <!-- Crop Type -->
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-header bg-primary text-white text-center">
-                                    <i class="fas fa-landmark fa-2x "></i>
-                                    <h5 class="card-title text-center">Soil Type</h5>
+                                    <i class="fas fa-seedling fa-2x mb-2"></i>
+                                    <h5 class="mb-0">Crop Types</h5>
                                 </div>
-                                <div class="card-body bg-dark text-white">
-                                    <h1 class="text-center">{{ count($infotanah) }}</h1>
+                                <div class="card-body bg-dark text-white d-flex align-items-center justify-content-center">
+                                    <h1 class="display-5 fw-bold mb-0">{{ count($infotanah) }}</h1>
                                 </div>
                             </div>
                         </div>
-                        {{-- pemilik lahan --}}
-                        <div class="col-md-3 mt-1">
-                            <div class="card">
+
+                        <!-- Land/Farm Owner -->
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-header bg-warning text-white text-center">
-                                    <i class="fas fa-users fa-2x "></i>
-                                    <h5 class="card-title text-center">Land/Farm Owner</h5>
+                                    <i class="fas fa-users fa-2x mb-2"></i>
+                                    <h5 class="mb-0">Land / Farm Owners</h5>
                                 </div>
-                                <div class="card-body bg-dark text-white">
-                                    <h1 class="text-center">{{ count($pemiliklahan) }}</h1>
+                                <div class="card-body bg-dark text-white d-flex align-items-center justify-content-center">
+                                    <h1 class="display-5 fw-bold mb-0">{{ count($pemiliklahan) }}</h1>
                                 </div>
                             </div>
                         </div>
-                        {{-- info tanah --}}
-                        <div class="col-md-3 mt-1">
-                            <div class="card">
+
+                        <!-- Village / Barangay -->
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-header bg-success text-white text-center">
-                                    {{-- building  --}}
-                                    <i class="fas fa-building fa-2x "></i>
-                                    <h5 class="card-title text-center">Village/Barangay</h5>
+                                    <i class="fas fa-building fa-2x mb-2"></i>
+                                    <h5 class="mb-0">Barangays</h5>
                                 </div>
-                                <div class="card-body bg-dark text-white">
-                                    <h1 class="text-center">{{ count($desa) }}</h1>
+                                <div class="card-body bg-dark text-white d-flex align-items-center justify-content-center">
+                                    <h1 class="display-5 fw-bold mb-0">{{ count($desa) }}</h1>
                                 </div>
                             </div>
                         </div>
-                        {{-- Potensi --}}
-                        <div class="col-md-3 mt-1">
-                            <div class="card">
+
+                        <!-- Farms / Lands -->
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 shadow-sm">
                                 <div class="card-header bg-danger text-white text-center">
-                                    {{-- fa tanah --}}
-                                    <i class="fas fa-globe fa-2x "></i>
-                                    <h5 class="card-title text-center">Farm/Lands</h5>
+                                    <i class="fas fa-globe fa-2x mb-2"></i>
+                                    <h5 class="mb-0">Farms / Lands</h5>
                                 </div>
-                                <div class="card-body bg-dark text-white">
-                                    <h1 class="text-center">{{ count($potensi) }}</h1>
+                                <div class="card-body bg-dark text-white d-flex align-items-center justify-content-center">
+                                    <h1 class="display-5 fw-bold mb-0">{{ count($potensi) }}</h1>
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                    </div> <!-- End row -->
                 </div>
-                @endsection
+            </div>
+
+        </div>
+    </div>
+</div>
+@endsection

@@ -32,155 +32,174 @@ var markerLayers = {};
 var originalColors = {};
 var petas = {!! json_encode($petas->toArray()) !!};
 
-// Unique colors based on ID
-function getColorFromId(id) {
-    var hue = (id * 137.508) % 360; // golden angle
-    return `hsl(${hue}, 70%, 50%)`;
+// Get unique barangays & crops
+var barangaySet = new Set();
+var cropSet = new Set();
+petas.forEach(item => {
+    if(item.barangay_name) barangaySet.add(item.barangay_name);
+    if(item.crop_type) cropSet.add(item.crop_type);
+});
+
+// Function to generate crop icons
+function getCropIcon(type){
+    const t = (type || '').toLowerCase();
+    let emoji = '🌱';
+    if(t.includes('padi') || t.includes('rice')) emoji = '🌾';
+    else if(t.includes('jagung') || t.includes('corn')) emoji = '🌽';
+    else if(t.includes('sayur') || t.includes('veget')) emoji = '🥬';
+    else if(t.includes('kopi') || t.includes('coffee')) emoji = '☕';
+    else if(t.includes('eggplant') || t.includes('eggplant')) emoji = '🍆';
+    else if(t.includes('kelapa') || t.includes('coco')) emoji = '🥥';
+    else if(t.includes('kakao') || t.includes('cocoa')) emoji = '🍫';
+    else if(t.includes('tebu') || t.includes('sugarcane')) emoji = '🎋';
+    else if(t.includes('kacang') || t.includes('bean')) emoji = '🫘';
+    else if(t.includes('tomat') || t.includes('tomato')) emoji = '🍅';
+    else if(t.includes('cabai') || t.includes('chili')) emoji = '🌶️';
+    else if(t.includes('pisang') || t.includes('banana')) emoji = '🍌';
+    else if(t.includes('mangga') || t.includes('mango')) emoji = '🥭';
+    else if(t.includes('calamasi') || t.includes('calamansi')) emoji = '🍋‍🟩';
+    else if(t.includes('durian')) emoji = '🟫';
+    else if(t.includes('rambutan')) emoji = '🔴';
+    else if(t.includes('singkong') || t.includes('cassava')) emoji = '🥔';
+    else if(t.includes('ubi') || t.includes('sweet potato')) emoji = '🍠';
+    else if(t.includes('kentang') || t.includes('potato')) emoji = '🥔';
+    else if(t.includes('bawang') || t.includes('onion') || t.includes('garlic')) emoji = '🧅';
+    return L.divIcon({
+        className: 'crop-icon',
+        html: `<div style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#fff;border:2px solid #2e7d32;font-size:16px;box-shadow:0 2px 4px rgba(0,0,0,0.3);">${emoji}</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+    });
 }
 
-petas.forEach(function(item) {
-    if (!item.batas_lahan) return;
+// Color function
+function getColorFromId(id) {
+    var hue = (id * 137.508) % 360;
+    return `hsl(${hue},70%,50%)`;
+}
 
+// Create polygons and markers
+petas.forEach(function(item) {
+    if (!item.land_boundaries || item.land_boundaries.trim() === '') return;
     try {
-        var geojson = JSON.parse(item.batas_lahan);
+        var geojson = JSON.parse(item.land_boundaries);
+        if (!geojson || !geojson.features || geojson.features.length === 0) return;
 
         var strokeColor = getColorFromId(item.id);
         var fillColor = getColorFromId(item.id + 1000);
 
-        var layer = L.geoJSON(geojson, {
-            style: { color: strokeColor, fillColor: fillColor, fillOpacity: 0.6 }
-        }).addTo(map);
-
+        var layer = L.geoJSON(geojson, { style: { color: strokeColor, fillColor: fillColor, fillOpacity: 0.6 } }).addTo(map);
         polygonLayers[item.id] = layer;
         originalColors[item.id] = { stroke: strokeColor, fill: fillColor };
 
-        // Popup for polygon
-        layer.bindPopup(
-            `<b>ID:</b> ${item.id}<br>
-            <b>Village:</b> ${item.nama_desa}<br>
-            <b>Land Owner:</b> ${item.nama_pemiliklahan}<br>
-            <b>Soil Type:</b> ${item.jenis_tanah}<br>
-            <b>Elevation:</b> ${item.ketinggian} mdpl<br>
-            <b>Humidity:</b> ${item.kelembaban}%<br>
-            <b>Land Area:</b> ${item.luas_lahan} m²`
-        );
+        var bounds = layer.getBounds();
+        var centroid = bounds.getCenter();
 
-        // Marker at polygon centroid
-        var latlngs = layer.getLayers()[0].getLatLngs()[0];
-        var centroid = latlngs.reduce((acc, val) => [acc[0]+val.lat, acc[1]+val.lng], [0,0]).map(v => v/latlngs.length);
+        var popupHtml = `<div style="min-width:180px">
+            <b>${item.crop_type || 'Unknown Crop'}</b><br>
+            Barangay: ${item.barangay_name || '-'}<br>
+            Owner: ${item.farmer_name || '-'}<br>
+            Land Area: ${item.land_area || '-'} m²
+        </div>`;
 
-        var marker = L.marker(centroid, {
-            icon: L.divIcon({
-                className: 'custom-marker',
-                html: `
-                    <div style="
-                        width: 40px;
-                        height: 40px;
-                        border: 3px solid black;
-                        border-radius: 50%;
-                        background: white;
-                        display:flex;
-                        justify-content:center;
-                        align-items:center;
-                        font-weight:bold;
-                        color: ${strokeColor};
-                        box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
-                    ">
-                        <i class="fa fa-map-marker" style="font-size: 22px;"></i>
-                    </div>
-                `,
-                iconSize: [40, 40],
-                iconAnchor: [20, 40],
-            })
-        }).addTo(map);
-
-        // Marker popup
-        marker.bindPopup(`<b>Farmer:</b> ${item.nama_pemiliklahan}<br><b>Barangay:</b> ${item.nama_desa}`);
+        var marker = L.marker(centroid, { icon: getCropIcon(item.crop_type) }).addTo(map);
+        marker.bindPopup(popupHtml);
+        layer.bindPopup(popupHtml);
         markerLayers[item.id] = marker;
 
-        // Zoom feature on polygon click
-        layer.on('click', function() {
-            map.fitBounds(layer.getBounds());
-            layer.openPopup();
-            marker.openPopup();
-        });
+        layer.on('click', () => map.fitBounds(bounds));
+        marker.on('click', () => map.setView(centroid, 18));
 
-        // Zoom feature on marker click
-        marker.on('click', function() {
-            map.setView(marker.getLatLng(), 18, { animate: true });
-            marker.openPopup();
-            layer.openPopup();
-        });
-
-    } catch(err) {
-        console.error('Invalid GeoJSON for ID '+item.id, err);
-    }
+    } catch(e) { console.error('Invalid GeoJSON for ID '+item.id, e); }
 });
 
-// SEARCH BAR
+// === SEARCH & FILTER CONTROL (Smaller UI) ===
 var searchControl = L.control({ position: 'topright' });
-searchControl.onAdd = function(map) {
+searchControl.onAdd = function() {
     var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
     div.style.background = '#fff';
-    div.style.padding = '5px';
-    div.style.minWidth = '200px';
+    div.style.padding = '4px';
+    div.style.minWidth = '180px';
+    div.style.fontSize = '12px';
     div.innerHTML = `
+        <select id="barangayFilter" style="width:100%;margin-bottom:3px;padding:3px;font-size:12px;">
+            <option value="">All Barangays</option>
+        </select>
+        <select id="cropFilter" style="width:100%;margin-bottom:3px;padding:3px;font-size:12px;">
+            <option value="">All Crops</option>
+        </select>
         <input type="text" id="petaSearch" placeholder="Search land..." 
-               style="width: 100%; padding: 5px; margin-bottom: 5px;">
-        <div id="searchResults" style="max-height:150px; overflow-y:auto; font-size: 13px;"></div>
+            style="width:100%;padding:3px;margin-bottom:3px;font-size:12px;">
+        <div id="searchResults" 
+            style="max-height:120px;overflow-y:auto;font-size:12px;line-height:1.3;"></div>
     `;
     L.DomEvent.disableClickPropagation(div);
     return div;
 };
 searchControl.addTo(map);
 
-function searchPeta(query) {
+// Populate dropdowns
+const barangayFilter = document.getElementById('barangayFilter');
+Array.from(barangaySet).sort().forEach(b => barangayFilter.innerHTML += `<option value="${b}">${b}</option>`);
+const cropFilter = document.getElementById('cropFilter');
+Array.from(cropSet).sort().forEach(c => cropFilter.innerHTML += `<option value="${c}">${c}</option>`);
+
+// === FILTER FUNCTION ===
+function applyFilters() {
+    var query = document.getElementById('petaSearch').value.toLowerCase();
+    var selectedBarangay = barangayFilter.value;
+    var selectedCrop = cropFilter.value;
     var resultsDiv = document.getElementById('searchResults');
     resultsDiv.innerHTML = '';
+
     var foundAny = false;
 
-    petas.forEach(function(item) {
-        if (
-            item.nama_desa.toLowerCase().includes(query.toLowerCase()) ||
-            item.nama_pemiliklahan.toLowerCase().includes(query.toLowerCase()) ||
-            item.jenis_tanah.toLowerCase().includes(query.toLowerCase())
-        ) {
+    petas.forEach(item => {
+        var matchesSearch = !query || item.barangay_name.toLowerCase().includes(query) || 
+            item.farmer_name.toLowerCase().includes(query) || 
+            item.crop_type.toLowerCase().includes(query);
+        var matchesBarangay = !selectedBarangay || item.barangay_name === selectedBarangay;
+        var matchesCrop = !selectedCrop || item.crop_type === selectedCrop;
+
+        var visible = matchesSearch && matchesBarangay && matchesCrop;
+
+        // Show/hide layers
+        if (polygonLayers[item.id]) {
+            if (visible) map.addLayer(polygonLayers[item.id]); else map.removeLayer(polygonLayers[item.id]);
+        }
+        if (markerLayers[item.id]) {
+            if (visible) map.addLayer(markerLayers[item.id]); else map.removeLayer(markerLayers[item.id]);
+        }
+
+        // Add to search results
+        if (visible) {
             foundAny = true;
-
-            var resultItem = document.createElement('div');
-            resultItem.style.padding = '4px';
-            resultItem.style.cursor = 'pointer';
-            resultItem.style.borderBottom = '1px solid #ddd';
-            resultItem.innerHTML = `<b>${item.nama_desa}</b><br>Owner: ${item.nama_pemiliklahan}<br>Soil: ${item.jenis_tanah}`;
-
-            resultItem.addEventListener('click', function() {
-                var polygon = polygonLayers[item.id];
-                var marker = markerLayers[item.id];
-
-                if(polygon.getBounds) map.fitBounds(polygon.getBounds());
-
-                polygon.setStyle({ color: 'yellow', weight: 5 });
-                setTimeout(() => {
-                    polygon.setStyle({ color: originalColors[item.id].stroke, fillColor: originalColors[item.id].fill, weight: 2 });
-                }, 2000);
-
-                marker.openPopup();
-                polygon.openPopup();
-                resultsDiv.innerHTML = '';
-            });
-
-            resultsDiv.appendChild(resultItem);
+            var div = document.createElement('div');
+            div.style.padding = '3px';
+            div.style.borderBottom = '1px solid #ddd';
+            div.style.cursor = 'pointer';
+            div.innerHTML = `<b>${item.barangay_name}</b><br>Owner: ${item.farmer_name}<br>Crop: ${item.crop_type}`;
+            div.onclick = function() {
+                map.fitBounds(polygonLayers[item.id].getBounds());
+                polygonLayers[item.id].openPopup();
+                markerLayers[item.id].openPopup();
+            };
+            resultsDiv.appendChild(div);
         }
     });
 
     if (!foundAny && query.trim() !== '') {
-        resultsDiv.innerHTML = '<div style="padding:4px;color:#999;">No matches found</div>';
+        resultsDiv.innerHTML = '<div style="padding:3px;color:#999;">No matches found</div>';
     }
 }
 
-document.getElementById('petaSearch').addEventListener('input', function() {
-    searchPeta(this.value);
-});
+// Event listeners
+document.getElementById('petaSearch').addEventListener('input', applyFilters);
+barangayFilter.addEventListener('change', applyFilters);
+cropFilter.addEventListener('change', applyFilters);
+
+// Initial render
+applyFilters();
 </script>
 @endpush
 </div>

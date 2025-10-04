@@ -6,23 +6,22 @@
                     <div class="card-header">{{ __('Land Area Information') }}</div>
 
                     <div class="card-body">
-                        {{-- Add Data Button --}}
+                        <!-- Add Button -->
                         <div class="row mb-2">
                             <div class="col-md-12">
                                 <button class="btn btn-primary" wire:click='tambah'>Add Data</button>
                             </div>
                         </div>
 
-                        {{-- Pagination & Search --}}
+                        <!-- Pagination & Search -->
                         <div class="row mb-2">
                             <div class="col-md-6">
                                 <select wire:model="perPage" class="form-control">
                                     <option value="5">5</option>
                                     <option value="10">10</option>
-                                    <option value="15">15</option>
                                     <option value="20">20</option>
-                                    <option value="25">25</option>
-                                    <option value="30">30</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -30,229 +29,276 @@
                             </div>
                         </div>
 
-                        {{-- Success Message --}}
+                        <!-- Success Message -->
                         @if(session()->has('message'))
                             <div class="alert alert-success">{{ session('message') }}</div>
                         @endif
 
-                        {{-- Data Table --}}
-                        <div class="row mt-2">
-                            <div class="col-md-12">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Barangay</th>
-                                            <th>Farmer/Land Owner</th>
-                                            <th>Land</th>
-                                            <th>Land Boundaries</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($potensi as $item)
-                                            <tr>
-                                                <td>{{ $item->id }}</td>
-                                                <td>{{ $item->nama_desa }}</td>
-                                                <td>{{ $item->nama_pemiliklahan }}</td>
-                                                <td>{{ $item->luas_lahan }}</td>
-                                                <td>{{ $item->batas_lahan }}</td>
-                                                <td>
-                                                    <button class="btn btn-primary btn-sm mb-1" wire:click="potensiId({{ $item->id }})">Edit</button>
-                                                    <button class="btn btn-danger btn-sm" wire:click="delete({{ $item->id }})">Delete</button>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="7" class="text-center">Data Tidak Ditemukan</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                        <!-- Data Table -->
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Barangay</th>
+                                    <th>Farmer/Land Owner</th>
+                                    <th>Crop Type</th>
+                                    <th>Land Area</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($potensi as $item)
+                                    <tr>
+                                        <td>{{ $item->id }}</td>
+                                        <td>{{ $item->barangay_name }}</td>
+                                        <td>{{ $item->farmer_name }}</td>
+                                        <td>{{ $item->crop_type }}</td>
+                                        <td>{{ $item->land_area }} m²</td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm mb-1" wire:click="potensiId({{ $item->id }})">Edit</button>
+                                            <button class="btn btn-danger btn-sm" wire:click="delete({{ $item->id }})">Delete</button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">No Data Found</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination -->
+                        {{ $potensi->links() }}
+
+                        <!-- Modal: Add/Update Form -->
+                        <div class="modal fade" id="potensiModal" tabindex="-1" aria-labelledby="potensiModalLabel" aria-hidden="true" wire:ignore.self>
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ $isUpdate ? 'Update Data' : 'Add Data' }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="potensiForm" wire:submit.prevent='{{ $isUpdate ? "update" : "store" }}'>
+                                            @csrf
+                                            <!-- Barangay -->
+                                            <div class="mt-2">
+                                                <label>Barangay</label>
+                                                <select wire:model="barangay_id" class="form-control">
+                                                    <option value="">Pick Barangay</option>
+                                                    @foreach($desa as $d)
+                                                        <option value="{{ $d->id }}">{{ $d->barangay_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('barangay_id') <span class="text-danger">{{ $message }}</span> @enderror
+                                            </div>
+
+                                            <!-- Farmer -->
+                                            <div class="mt-2" style="position: relative;">
+                                                <label>Farmer/Land Owner</label>
+                                                <input type="text" wire:model="searchFarmer" class="form-control" placeholder="Search Farmer/Land Owner...">
+                                                @error('farmer_id') <span class="text-danger">{{ $message }}</span> @enderror
+
+                                                @if(!empty($pemiliklahan) && strlen($searchFarmer) > 0)
+                                                    <ul class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 150px; overflow-y: auto;">
+                                                        @foreach($pemiliklahan as $p)
+                                                            <li class="list-group-item list-group-item-action" 
+                                                                wire:click="selectFarmer({{ $p->id }}, '{{ $p->farmer_name }}')">
+                                                                {{ $p->farmer_name }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            </div>
+
+
+                                            <!-- Crop Type -->
+                                            <div class="mt-2">
+                                                <label>Crop Type</label>
+                                                <select wire:model="crop_id" class="form-control">
+                                                    <option value="">Pick Crop Type</option>
+                                                    @foreach($infotanah as $i)
+                                                        <option value="{{ $i->id }}">{{ $i->crop_type }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('crop_id') <span class="text-danger">{{ $message }}</span> @enderror
+                                            </div>
+
+                                            <!-- Land Area -->
+                                            <div class="mt-2">
+                                                <label>Land Area (m²)</label>
+                                                <input 
+                                                    type="number" 
+                                                    step="0.01" 
+                                                    wire:model="land_area" 
+                                                    class="form-control @error('land_area') is-invalid @enderror">
+                                                @error('land_area') 
+                                                    <span class="text-danger">{{ $message }}</span> 
+                                                @enderror
+                                            </div>
+
+
+                                            <!-- Upload -->
+                                            <div class="mt-2">
+                                                <label>Upload GeoJSON/JSON</label>
+                                                <input type="file" id="file-upload" class="form-control" accept=".geojson,.json">
+                                            </div>
+
+                                            <!-- Map -->
+                                            <div class="mt-2">
+                                                <div id="map" style="width: 100%; height: 400px;" wire:ignore></div>
+                                            </div>
+
+                                            <!-- Boundaries -->
+                                            <div class="mt-2">
+                                                <label>Land Boundaries (GeoJSON)</label>
+                                                <textarea class="form-control" id="get-data" rows="5" wire:model="land_boundaries"></textarea>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" form="potensiForm" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {{-- Add/Update Form --}}
-                        @if($isTambah || $isUpdate)
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <form wire:submit.prevent='{{ $isUpdate ? "update" : "store" }}' enctype="multipart/form-data">
-                                    @csrf
-                                    
-                                    {{-- Barangay --}}
-                                    <div class="form-group mt-2">
-                                        <label>Barangay</label>
-                                        <select wire:model="desa_id" class="form-control">
-                                            <option value="">Pick Barangay</option>
-                                            @foreach($desa as $d)
-                                                <option value="{{ $d->id }}">{{ $d->nama_desa }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('desa_id') <span class="text-danger">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    {{-- Farmer/Land Owner --}}
-                                    <div class="form-group mt-2">
-                                        <label>Farmer/Land Owner</label>
-                                        <select wire:model="pemiliklahan_id" class="form-control">
-                                            <option value="">Pick Farmer/Land Owner</option>
-                                            @foreach($pemiliklahan as $p)
-                                                <option value="{{ $p->id }}">{{ $p->nama_pemiliklahan }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('pemiliklahan_id') <span class="text-danger">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    {{-- Soil Type --}}
-                                    <div class="form-group mt-2">
-                                        <label>Soil Type</label>
-                                        <select wire:model="infotanah_id" class="form-control">
-                                            <option value="">Pick Soil Type</option>
-                                            @foreach($infotanah as $i)
-                                                <option value="{{ $i->id }}">{{ $i->jenis_tanah }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('infotanah_id') <span class="text-danger">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    {{-- Land Area --}}
-                                    <div class="form-group mt-2">
-                                        <label>Land (m²)</label>
-                                        <input type="number" wire:model="luas_lahan" class="form-control">
-                                        @error('luas_lahan') <span class="text-danger">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    {{-- File Upload --}}
-                                    <div class="form-group mt-2">
-                                        <label>Upload GeoJSON/JSON</label>
-                                        <input type="file" id="file-upload" class="form-control" accept=".geojson,.json">
-                                    </div>
-
-                                    {{-- Map --}}
-                                    <div class="form-group mt-2">
-                                        <div id="map" style="width: 100%; height: 400px;" wire:ignore></div>
-                                    </div>
-
-                                    {{-- Land Boundaries --}}
-                                    <div class="form-group mt-2">
-                                        <label>Land Boundaries (GeoJSON)</label>
-                                        <textarea class="form-control" id="get-data" rows="5" wire:model="batas_lahan"></textarea>
-                                    </div>
-
-                                    <button type="submit" class="btn btn-primary mt-2">Save</button>
-                                </form>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-@push('scripts')
+                        <!-- Map Script -->
+                        @push('scripts')
+<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.0/dist/leaflet-geoman.css" />
 <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.0/dist/leaflet-geoman.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.14.0/dist/leaflet-geoman.css"/>
-
 <script>
 document.addEventListener('livewire:load', () => {
-    const map = L.map('map').setView([16.8921, 120.4266], 13);
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/">2022</a>',
-        maxZoom: 23,
-        id: 'mapbox/satellite-streets-v11',
-        tileSize: 512,
-        zoomOffset: -1,
-        accessToken: 'pk.eyJ1Ijoib2tpbmluYW0iLCJhIjoiY21lYTZxazBqMGFzZjJpc2l5b2dyeHN0dCJ9.-nx4JkNuM_zjmW_Tq9RE3w'
+    // Default center and zoom
+    const defaultCenter = [16.8921, 120.4266];
+    const defaultZoom = 13;
+
+    const map = L.map('map', { minZoom: 12 }).setView(defaultCenter, defaultZoom);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles © Esri'
     }).addTo(map);
 
-    // LayerGroup for polygons
     let polygonLayerGroup = L.layerGroup().addTo(map);
+    let markerLayerGroup = L.layerGroup().addTo(map);
 
-    // Load existing polygons from database
-    let lahan = {!! json_encode($lahan->toArray()) !!};
-    lahan.forEach(item => {
-        if(item.batas_lahan){
-            try {
-                const geojson = JSON.parse(item.batas_lahan);
-                L.geoJSON(geojson, { style: { color: getRandomColor(), fillOpacity: 0.5 } })
-                    .addTo(polygonLayerGroup);
-            } catch(err){
-                console.error('Invalid GeoJSON:', err);
-            }
-        }
-    });
+    map.pm.addControls({ position: 'topleft', drawPolygon: true, editMode: true, removalMode: true });
 
-    // Geoman controls
-    map.pm.addControls({
-        position: 'topleft',
-        drawCircle: false,
-        drawMarker: false,
-        drawPolyline: false,
-        drawRectangle: false,
-        drawCircleMarker: false,
-        drawPolygon: true,
-        editMode: true,
-        removalMode: true,
-    });
+    function getCropIcon(type) {
+        const name = (type || '').toLowerCase();
+        let iconPath = '/images/icons/default.png';
+        if (name.includes('rice')) iconPath = '/images/icons/rice.png';
+        else if (name.includes('corn')) iconPath = '/images/icons/corn.png';
+        else if (name.includes('calamansi')) iconPath = '/images/icons/calamansi.png';
+        else if (name.includes('eggplant')) iconPath = '/images/icons/eggplant.png';
+        else if (name.includes('cassava')) iconPath = '/images/icons/cassava.png';
+        return L.icon({ iconUrl: iconPath, iconSize: [32, 32] });
+    }
 
     function getRandomColor() {
-        let letters = '0123456789ABCDEF';
-        let color = '#';
-        for(let i=0; i<6; i++){ color += letters[Math.floor(Math.random()*16)]; }
-        return color;
+        return '#' + Math.floor(Math.random() * 16777215).toString(16);
     }
 
-    function updateTextarea(){
+    function updateTextarea() {
         const geojson = polygonLayerGroup.toGeoJSON();
-        const geojsonStr = JSON.stringify(geojson);
-        @this.set('batas_lahan', geojsonStr);
-        document.getElementById('get-data').value = geojsonStr;
+        @this.set('land_boundaries', JSON.stringify(geojson));
+        document.getElementById('get-data').value = JSON.stringify(geojson);
     }
 
-    // Sync textarea on create/edit/remove
-    map.on('pm:create', e => {
-        polygonLayerGroup.addLayer(e.layer);
-        updateTextarea();
-    });
+    // ✅ Zoom with a max zoom limit
+    function zoomToBounds(bounds) {
+        map.fitBounds(bounds, { maxZoom: 16 }); // Prevent zooming out too far
+    }
+
+    // Draw polygons and fit bounds but keep closer zoom
+    function drawPolygons(lahan, fitAll = true) {
+        polygonLayerGroup.clearLayers();
+        markerLayerGroup.clearLayers();
+
+        let allBounds = [];
+
+        lahan.forEach(item => {
+            if (item.land_boundaries) {
+                try {
+                    const geojson = JSON.parse(item.land_boundaries);
+                    const geoLayer = L.geoJSON(geojson, { style: { color: getRandomColor(), fillOpacity: 0.5 } })
+                        .on('click', function () { zoomToBounds(this.getBounds()); })
+                        .addTo(polygonLayerGroup);
+
+                    geoLayer.eachLayer(layer => {
+                        if (layer.getBounds) {
+                            allBounds.push(layer.getBounds());
+                            const center = layer.getBounds().getCenter();
+                            const popup = `<b>${item.crop_type || 'Crop'}</b><br>Barangay: ${item.barangay_name || '-'}<br>Owner: ${item.farmer_name || '-'}<br>Land: ${item.land_area || '-'} m²`;
+                            L.marker(center, { icon: getCropIcon(item.crop_type) }).bindPopup(popup).addTo(markerLayerGroup);
+                            layer.bindPopup(popup);
+                        }
+                    });
+                } catch (e) { console.error('Invalid GeoJSON', e); }
+            }
+        });
+
+        // Only zoom if there are polygons
+        if (fitAll && allBounds.length > 0) {
+            let combinedBounds = allBounds[0];
+            for (let i = 1; i < allBounds.length; i++) {
+                combinedBounds = combinedBounds.extend(allBounds[i]);
+            }
+            zoomToBounds(combinedBounds);
+        } else {
+            // If no polygons, reset to default view
+            map.setView(defaultCenter, defaultZoom);
+        }
+    }
+
+    // Load polygons from DB
+    let lahan = {!! json_encode($lahan->toArray()) !!};
+    drawPolygons(lahan, true);
+
+    window.addEventListener('refreshMap', e => drawPolygons(e.detail.lahan, true));
+
+    // Update GeoJSON after editing
+    map.on('pm:create', e => { polygonLayerGroup.addLayer(e.layer); updateTextarea(); zoomToBounds(e.layer.getBounds()); });
     map.on('pm:edit', updateTextarea);
     map.on('pm:remove', updateTextarea);
 
-    // File upload handler
-    document.getElementById('file-upload').addEventListener('change', function(e){
+    // ✅ Preview & zoom when uploading GeoJSON
+    document.getElementById('file-upload').addEventListener('change', e => {
         const file = e.target.files[0];
-        if(!file) return;
-
-        const ext = file.name.split('.').pop().toLowerCase();
-        if(ext !== 'geojson' && ext !== 'json'){
-            alert('Only GeoJSON or JSON files are supported.');
-            return;
-        }
-
+        if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(event){
+        reader.onload = ev => {
             try {
-                const geojson = JSON.parse(event.target.result);
+                const geojson = JSON.parse(ev.target.result);
                 polygonLayerGroup.clearLayers();
-                L.geoJSON(geojson, { style: { color: getRandomColor(), fillOpacity: 0.5 } })
+                const layer = L.geoJSON(geojson, { style: { color: getRandomColor(), fillOpacity: 0.5 } })
+                    .on('click', function () { zoomToBounds(this.getBounds()); })
                     .addTo(polygonLayerGroup);
-
-                // Fit map to polygon bounds safely
-                const layers = polygonLayerGroup.getLayers();
-                if(layers.length > 0){
-                    const bounds = L.featureGroup(layers).getBounds();
-                    map.fitBounds(bounds);
-                }
-
+                zoomToBounds(layer.getBounds());
                 updateTextarea();
-            } catch(err){
-                alert('Error parsing file: ' + err.message);
-            }
+            } catch { alert('Invalid GeoJSON'); }
         };
         reader.readAsText(file);
+    });
+
+    // Modal events
+    window.addEventListener('open-potensi-modal', () => {
+        const modal = new bootstrap.Modal(document.getElementById('potensiModal'));
+        modal.show();
+        setTimeout(() => map.invalidateSize(), 300);
+    });
+
+    window.addEventListener('close-potensi-modal', () => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('potensiModal'));
+        if (modal) modal.hide();
     });
 });
 </script>
 @endpush
 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

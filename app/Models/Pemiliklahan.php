@@ -8,11 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Pemiliklahan extends Model
 {
     use HasFactory;
-    protected $table = 'pemiliklahans';
+
+    protected $table = 'landowners';
+
     protected $fillable = [
-        'nama_pemiliklahan',
-        'alamat_pemiliklahan',
-        'no_hp_pemiliklahan',
-        'email_pemiliklahan',
+        'farmer_name',
+        'farmer_number',
+        'barangay_id',
     ];
+
+    public function barangay()
+    {
+        return $this->belongsTo(\App\Models\Barangay::class, 'barangay_id', 'id');
+    }
 }
